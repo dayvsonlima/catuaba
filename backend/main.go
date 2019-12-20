@@ -1,7 +1,7 @@
 package main
 
 import(
-  "github.com/dayvsonlima/catuaba/config"
+  "github.com/dayvsonlima/catuaba/backend/config"
 )
 
 func main() {
