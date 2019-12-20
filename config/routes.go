@@ -6,10 +6,10 @@ import(
   "github.com/dayvsonlima/catuaba/app/controllers/example_controller"
 )
 
-func Routes() {
+func Routes() *gin.Engine {
   routes := gin.Default()
 
   routes.GET("/", example_controller.Index)
 
-  routes.Run()
+  return routes
 }

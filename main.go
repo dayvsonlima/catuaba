@@ -5,5 +5,5 @@ import(
 )
 
 func main() {
-  config.Routes()
+  config.Routes().Run()
 }

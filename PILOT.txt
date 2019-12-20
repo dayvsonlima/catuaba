@@ -1,0 +1,17 @@
+Possíveis ORMs
+
+https://github.com/astaxie/beego/tree/master/orm
+
+https://gorm.io/docs/sql_builder.html
+
+
+Proposta:
+
+ - Ser um framework prático e super opinativo,
+ trazendo consigo o react, golang, Gin, goorm,
+ parceljs, bulmajs
+
+ - Geradores:
+ --- O framework deve incluir os geradores básicos para
+ desenvolver o CRUD do projeto, já utilizando as boas práticas
+ de javascript
