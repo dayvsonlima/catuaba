@@ -15,3 +15,8 @@ Proposta:
  --- O framework deve incluir os geradores básicos para
  desenvolver o CRUD do projeto, já utilizando as boas práticas
  de javascript
+
+
+Objetivo inicial:
+
+- Criar um framework que seja capaz de criar um blog em 5 minutos

@@ -1,4 +1,4 @@
-package example_controller
+package posts_controller
 
 import "github.com/gin-gonic/gin"
 
