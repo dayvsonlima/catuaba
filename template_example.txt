@@ -1,0 +1,29 @@
+// define the template
+
+const someTemplate = `insert into {{.Schema}}.{{.Table}} (field1, field2)
+values
+   {{ range .Rows }}
+       ({{.Field1}}, {{.Field2}}),
+   {{end}};`
+
+// wrap your values and execute the template
+
+    data := struct {
+        Schema string
+        Table string
+        Rows   []MyCustomType
+    }{
+        schema,
+        table,
+        someListOfMyCustomType,
+    }
+
+    t, err := template.New("new_tmpl").Parse(someTemplate)
+    if err != nil {
+        panic(err)
+    }
+
+    // working buffer
+    buf := &bytes.Buffer{}
+
+    err = t.Execute(buf, data)
