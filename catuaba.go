@@ -40,6 +40,25 @@ func main() {
 						Aliases: []string{"c"},
 						Usage:   "generate controller",
 						Action: func(c *cli.Context) error {
+							fmt.Println("generete your controller here")
+							return nil
+						},
+					},
+					{
+						Name:    "model",
+						Aliases: []string{"m"},
+						Usage:   "generate model",
+						Action: func(c *cli.Context) error {
+							fmt.Println("generete your model here")
+							return nil
+						},
+					},
+					{
+						Name:    "scaffold",
+						Aliases: []string{"s"},
+						Usage:   "generate scaffold",
+						Action: func(c *cli.Context) error {
+							fmt.Println("generete your scaffold here")
 							return nil
 						},
 					},
@@ -56,6 +75,7 @@ func main() {
 	sort.Sort(cli.FlagsByName(app.Flags))
 	sort.Sort(cli.CommandsByName(app.Commands))
 
+	app.EnableBashCompletion = true
 	err := app.Run(os.Args)
 	if err != nil {
 		log.Fatal(err)
