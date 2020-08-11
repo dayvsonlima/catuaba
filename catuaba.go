@@ -6,6 +6,7 @@ import (
 	"os"
 	"sort"
 
+	"github.com/dayvsonlima/catuaba/cli/model"
 	"github.com/urfave/cli/v2"
 )
 
@@ -48,10 +49,7 @@ func main() {
 						Name:    "model",
 						Aliases: []string{"m"},
 						Usage:   "generate model",
-						Action: func(c *cli.Context) error {
-							fmt.Println("generete your model here")
-							return nil
-						},
+						Action:  model.Action,
 					},
 					{
 						Name:    "scaffold",
