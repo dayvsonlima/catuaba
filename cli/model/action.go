@@ -3,6 +3,7 @@ package model
 import (
 	"bytes"
 	"fmt"
+	"os"
 	"text/template"
 	"unicode"
 
@@ -27,7 +28,7 @@ func Action(c *cli.Context) error {
 
 	t.Execute(buf, data)
 	fmt.Println(buf)
-
+	fmt.Println(os.Getwd())
 	return nil
 }
 
