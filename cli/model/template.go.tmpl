@@ -1,6 +1,4 @@
-package model
-
-const Template = `package models
+package models
 
 import "github.com/jinzhu/gorm"
 
@@ -10,4 +8,3 @@ type {{.Name | toModelName}} struct {
 	Title     
 	Content   
 }
-`
