@@ -3,6 +3,7 @@ package templates
 import (
 	"bytes"
 	"io/ioutil"
+	"strings"
 	"text/template"
 	"unicode"
 )
@@ -14,6 +15,7 @@ func Render(fileName string, data interface{}) string {
 		"toModelName": func(text string) string {
 			return Camelize(text)
 		},
+		"toAttrName": GetAttributeName,
 	}).Parse(string(tmpl))
 
 	buf := &bytes.Buffer{}
@@ -38,4 +40,12 @@ func Camelize(in string) string {
 	}
 
 	return string(out)
+}
+
+func GetAttributeName(in string) string {
+
+	attribute := strings.Split(in, ":")
+	attributeName := Camelize(attribute[0])
+
+	return attributeName
 }
