@@ -7,10 +7,14 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+type ModelBuilder struct {
+	Name   string
+	Params []string
+}
+
 func Action(c *cli.Context) error {
-	data := struct {
-		Name string
-	}{
+
+	data := ModelBuilder{
 		Name: c.Args().Get(0),
 	}
 
