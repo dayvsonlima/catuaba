@@ -10,8 +10,24 @@ import (
 	"unicode"
 )
 
+func RenderFromContent(content string, data interface{}) string {
+	t, _ := template.New("tmpm").Funcs(template.FuncMap{
+		"toModelName": func(text string) string {
+			return Camelize(text)
+		},
+		"toAttrName": GetAttributeName,
+		"toType":     GetAttributeType,
+		"toJson":     GetAttributeJson,
+	}).Parse(content)
+
+	buf := &bytes.Buffer{}
+	t.Execute(buf, data)
+
+	return buf.String()
+}
+
 func Render(fileName string, data interface{}) string {
-	tmpl, _ := ioutil.ReadFile("cli/model/template.go.tmpl")
+	tmpl, _ := ioutil.ReadFile(fileName)
 
 	t, _ := template.New("tmpm").Funcs(template.FuncMap{
 		"toModelName": func(text string) string {

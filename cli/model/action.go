@@ -2,6 +2,8 @@ package model
 
 import (
 	"fmt"
+	"io/ioutil"
+	"os"
 
 	"github.com/dayvsonlima/catuaba/cli/templates"
 	"github.com/urfave/cli/v2"
@@ -19,9 +21,17 @@ func Action(c *cli.Context) error {
 		Params: getAttributes(c),
 	}
 
-	out := templates.Render("cli/model/template.go.tmpl", data)
+	// out := templates.Render("cli/model/template.go.tmpl", data)
+	out := templates.RenderFromContent(Template, data)
 
-	fmt.Println(out)
+	currentPath, _ := os.Getwd()
+	modelPath := currentPath + "/app/models/" + templates.Snakeze(data.Name) + ".go"
+	err := ioutil.WriteFile(modelPath, []byte(out), 0644)
+	if err != nil {
+		fmt.Printf("Unable to write file: %v", err)
+	}
+
+	fmt.Println("+" + modelPath)
 	return nil
 }
 
