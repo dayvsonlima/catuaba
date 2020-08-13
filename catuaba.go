@@ -6,6 +6,8 @@ import (
 	"os"
 	"sort"
 
+	"github.com/dayvsonlima/catuaba/cli/new"
+
 	"github.com/dayvsonlima/catuaba/cli/model"
 	"github.com/urfave/cli/v2"
 )
@@ -17,10 +19,7 @@ func main() {
 				Name:    "new",
 				Aliases: []string{"n"},
 				Usage:   "create new catuaba application",
-				Action: func(c *cli.Context) error {
-					fmt.Println("creates catuaba here")
-					return nil
-				},
+				Action:  new.Action,
 			},
 			{
 				Name:    "server",
