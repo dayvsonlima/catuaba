@@ -1,9 +1,8 @@
-package templates
+package generator
 
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"regexp"
 	"strings"
 	"text/template"
@@ -19,24 +18,6 @@ func RenderFromContent(content string, data interface{}) string {
 		"toType":     GetAttributeType,
 		"toJson":     GetAttributeJson,
 	}).Parse(content)
-
-	buf := &bytes.Buffer{}
-	t.Execute(buf, data)
-
-	return buf.String()
-}
-
-func Render(fileName string, data interface{}) string {
-	tmpl, _ := ioutil.ReadFile(fileName)
-
-	t, _ := template.New("tmpm").Funcs(template.FuncMap{
-		"toModelName": func(text string) string {
-			return Camelize(text)
-		},
-		"toAttrName": GetAttributeName,
-		"toType":     GetAttributeType,
-		"toJson":     GetAttributeJson,
-	}).Parse(string(tmpl))
 
 	buf := &bytes.Buffer{}
 	t.Execute(buf, data)
