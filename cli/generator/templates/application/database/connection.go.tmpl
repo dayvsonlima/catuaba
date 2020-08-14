@@ -26,5 +26,5 @@ func ORM() *gorm.DB {
 
 // Migrations .
 func Migrations() {
-	Connection.AutoMigrate(&models.Post{})
+	Connection.AutoMigrate()
 }
