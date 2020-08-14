@@ -2,6 +2,13 @@
 
 Fast, super productive and aphrodisiac web framework
 
+# Install
+
+```
+go get -u github.com/dayvsonlima/catuaba
+```
+
+
 TO DO
  - install a rake-like tool
   https://github.com/magefile/mage
