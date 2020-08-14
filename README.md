@@ -8,6 +8,8 @@ Fast, super productive and aphrodisiac web framework
 go get -u github.com/dayvsonlima/catuaba
 ```
 
+## On Windows
+Install the [tdm-gcc](https://jmeubank.github.io/tdm-gcc/) 
 
 TO DO
  - install a rake-like tool
