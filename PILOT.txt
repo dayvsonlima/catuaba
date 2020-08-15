@@ -59,4 +59,9 @@ Keep templates on binary file
 https://github.com/gobuffalo/packr
 
 # import regex
+
+# get import content regex
+import(.+)*\((.|\n)+?\)
+
+
 import(.|\n)+\"(.|\n)\)
