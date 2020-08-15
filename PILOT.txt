@@ -63,5 +63,7 @@ https://github.com/gobuffalo/packr
 # get import content regex
 import(.+)*\((.|\n)+?\)
 
+# get DrawRoutes content
+func.+DrawRoutes.+{(.|\n)+\n}
 
 import(.|\n)+\"(.|\n)\)
