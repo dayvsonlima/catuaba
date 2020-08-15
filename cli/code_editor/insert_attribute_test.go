@@ -7,24 +7,41 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var (
-	code = `
-		// Migrations .
-		func Migrations() {
-			Connection.AutoMigrate(&models.Post{})
-		}
-	`
-)
-
 func TestInsertAttribute(t *testing.T) {
 
 	var (
-		expectedOutput = "Connection.AutoMigrate(&models.Post{}, &models.User{})"
-		methodName     = "AutoMigrate"
-		newAttribute   = "&models.User{}"
+		methodName   = "AutoMigrate"
+		newAttribute = "&models.User{}"
 	)
 
-	out := code_editor.InsertAttribute(code, methodName, newAttribute)
+	t.Run("when the method has some param", func(t *testing.T) {
+		var (
+			code = `
+			// Migrations .
+			func Migrations() {
+				Connection.AutoMigrate(&models.Post{})
+			}
+			`
+			expectedOutput = "Connection.AutoMigrate(&models.Post{}, &models.User{})"
+		)
 
-	assert.Contains(t, out, expectedOutput)
+		out := code_editor.InsertAttribute(code, methodName, newAttribute)
+		assert.Contains(t, out, expectedOutput)
+	})
+
+	t.Run("when the method has no params", func(t *testing.T) {
+		var (
+			code = `
+				// Migrations .
+				func Migrations() {
+					Connection.AutoMigrate()
+				}
+			`
+
+			expectedOutput = "Connection.AutoMigrate(&models.Post{})"
+		)
+
+		out := code_editor.InsertAttribute(code, methodName, newAttribute)
+		assert.Contains(t, out, expectedOutput)
+	})
 }
