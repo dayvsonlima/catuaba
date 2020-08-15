@@ -69,5 +69,8 @@ func.+DrawRoutes.+{(.|\n)+?\n}
 ## v2
 func.+DrawRoutes.+{\n((.|\n)+?)}
 
+# get module name
+module (.+)\n
+
 
 import(.|\n)+\"(.|\n)\)
