@@ -57,3 +57,6 @@ https://astaxie.gitbooks.io/build-web-application-with-golang/content/en/07.4.ht
 
 Keep templates on binary file
 https://github.com/gobuffalo/packr
+
+# import regex
+import(.|\n)+\"(.|\n)\)
