@@ -25,8 +25,8 @@ func TestInsertAttribute(t *testing.T) {
 			expectedOutput = "Connection.AutoMigrate(&models.Post{}, &models.User{})"
 		)
 
-		out := code_editor.InsertAttribute(code, methodName, newAttribute)
-		assert.Contains(t, out, expectedOutput)
+		output := code_editor.InsertAttribute(code, methodName, newAttribute)
+		assert.Contains(t, output, expectedOutput)
 	})
 
 	t.Run("when the method has no params", func(t *testing.T) {
@@ -34,14 +34,14 @@ func TestInsertAttribute(t *testing.T) {
 			code = `
 				// Migrations .
 				func Migrations() {
-					Connection.AutoMigrate()
+					Connection.AutoMigrate( )
 				}
 			`
 
-			expectedOutput = "Connection.AutoMigrate(&models.Post{})"
+			expectedOutput = "Connection.AutoMigrate(&models.User{})"
 		)
 
-		out := code_editor.InsertAttribute(code, methodName, newAttribute)
-		assert.Contains(t, out, expectedOutput)
+		output := code_editor.InsertAttribute(code, methodName, newAttribute)
+		assert.Contains(t, output, expectedOutput)
 	})
 }

@@ -2,13 +2,20 @@ package code_editor
 
 import (
 	"regexp"
+	"strings"
 )
 
 func InsertAttribute(code, methodName, newAttribute string) string {
 
-	rgx := `(m?)\.` + methodName + `\((.+)\)`
+	rgx := `(m?)\.` + methodName + `\((.+|)\)`
 	compiledRegex := regexp.MustCompile(rgx)
-	output := compiledRegex.ReplaceAllString(code, `.`+methodName+`($2, `+newAttribute+`)`)
 
-	return output
+	submatch := compiledRegex.FindStringSubmatch(code)
+	hasAttributes := len(strings.Trim(submatch[2], " "))
+
+	if hasAttributes == 0 {
+		return compiledRegex.ReplaceAllString(code, `.`+methodName+`(`+newAttribute+`)`)
+	}
+
+	return compiledRegex.ReplaceAllString(code, `.`+methodName+`($2, `+newAttribute+`)`)
 }
