@@ -44,4 +44,23 @@ func TestInsertAttribute(t *testing.T) {
 		output := code_editor.InsertAttribute(code, methodName, newAttribute)
 		assert.Contains(t, output, expectedOutput)
 	})
+
+	t.Run("when the method has break lines", func(t *testing.T) {
+		var (
+			code = `
+				// Migrations .
+				func Migrations() {
+					Connection.AutoMigrate(
+						&models.Parms{},
+						&models.Post{},
+					)
+				}
+			`
+
+			expectedOutput = "&models.User{}"
+		)
+
+		output := code_editor.InsertAttribute(code, methodName, newAttribute)
+		assert.Contains(t, output, expectedOutput)
+	})
 }
