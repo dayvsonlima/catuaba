@@ -7,6 +7,7 @@ import (
 	"sort"
 
 	"github.com/dayvsonlima/catuaba/cli/new"
+	"github.com/dayvsonlima/catuaba/cli/server"
 
 	"github.com/dayvsonlima/catuaba/cli/model"
 	"github.com/urfave/cli/v2"
@@ -25,10 +26,7 @@ func main() {
 				Name:    "server",
 				Aliases: []string{"s"},
 				Usage:   "start web server",
-				Action: func(c *cli.Context) error {
-					fmt.Println("Start server here")
-					return nil
-				},
+				Action:  server.Action,
 			},
 			{
 				Name:    "generate",
