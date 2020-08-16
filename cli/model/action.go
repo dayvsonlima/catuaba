@@ -1,6 +1,7 @@
 package model
 
 import (
+	"github.com/dayvsonlima/catuaba/cli/code_editor"
 	"github.com/dayvsonlima/catuaba/cli/generator"
 	"github.com/urfave/cli/v2"
 )
@@ -13,13 +14,17 @@ type ModelBuilder struct {
 func Action(c *cli.Context) error {
 
 	data := ModelBuilder{
-		Name:   c.Args().Get(0),
+		Name:   generator.Camelize(c.Args().Get(0)),
 		Params: getAttributes(c),
 	}
 
 	modelPath := "/app/models/" + generator.Snakeze(data.Name) + ".go"
 
 	generator.GenerateFile("model.go.tmpl", data, modelPath)
+
+	code_editor.EditFile("/database/connection.go", func(code string) string {
+		return code_editor.InsertAttribute(code, "AutoMigrate", "&models."+data.Name+"{}")
+	})
 
 	return nil
 }

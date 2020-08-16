@@ -7,7 +7,7 @@ import (
 
 func InsertAttribute(code, methodName, newAttribute string) string {
 
-	rgx := `(m?)\.` + methodName + `\((.+|)\)`
+	rgx := `(m?)\.` + methodName + `\((.+|\n+|)\)`
 	compiledRegex := regexp.MustCompile(rgx)
 
 	submatch := compiledRegex.FindStringSubmatch(code)
