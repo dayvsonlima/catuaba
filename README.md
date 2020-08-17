@@ -1,6 +1,6 @@
 # Catuaba Framework
 
-Fast, super productive and aphrodisiac web framework
+Fast, super productive and aphrodisiac web-framework written in golang
 
 # Setup
 
@@ -17,7 +17,7 @@ Install the [tdm-gcc](https://jmeubank.github.io/tdm-gcc/)
 | --- | --- | --- |
 |new | Create a New project | `catuaba new <project-name>`
 |server| Starts the catuaba web server | Run `catuaba server` in the project root
-|generator| Call some catuaba generator | `catuaba generator <generator-name> <...generator-params>`
+|generator| Call some catuaba generator | `catuaba generator <generator-name> ...<generator-params>`
 
 # Generators List
 | Command | Description | Usage |
