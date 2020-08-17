@@ -19,6 +19,12 @@ Install the [tdm-gcc](https://jmeubank.github.io/tdm-gcc/)
 |server| Starts the catuaba web server | Run `catuaba server` in the project root
 |generator| Call some catuaba generator | `catuaba generator <generator-name> <...generator-params>`
 
+# Generators List
+| Command | Description | Usage |
+| --- | --- | --- |
+|scaffold| scaffold is a full set of model, controller and router for one RESTFUL resource | `catuaba g scaffold <model-name> ...<attribute:type>`
+|model| generates a new model file in `app/models` directory | `catuaba g model <model-name> ...<attribute:type>`
+|controller| generates a new controller package in `app/controller` | `catuaba g controller <controller-name> ...<method-name (index, new, create, update, delete, all)>`. if you don't specify the method name, catuaba will create them all by default
 
 TO DO
  - install a rake-like tool
