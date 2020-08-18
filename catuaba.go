@@ -6,6 +6,7 @@ import (
 	"os"
 	"sort"
 
+	"github.com/dayvsonlima/catuaba/cli/controller"
 	"github.com/dayvsonlima/catuaba/cli/new"
 	"github.com/dayvsonlima/catuaba/cli/server"
 
@@ -37,10 +38,7 @@ func main() {
 						Name:    "controller",
 						Aliases: []string{"c"},
 						Usage:   "generate controller",
-						Action: func(c *cli.Context) error {
-							fmt.Println("generete your controller here")
-							return nil
-						},
+						Action:  controller.Action,
 					},
 					{
 						Name:    "model",

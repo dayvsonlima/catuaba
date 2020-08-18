@@ -1,0 +1,10 @@
+package {{.Name | camelize}}
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+// {{.MethodName | camelize}} .
+func {{.MethodName | camelize }}(ctx *gin.Context) { }

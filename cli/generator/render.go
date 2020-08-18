@@ -12,6 +12,7 @@ func Render(fileName string, data interface{}) string {
 		"toModelName": func(text string) string {
 			return Camelize(text)
 		},
+		"camelize":   Camelize,
 		"toAttrName": GetAttributeName,
 		"toType":     GetAttributeType,
 		"toJson":     GetAttributeJson,
