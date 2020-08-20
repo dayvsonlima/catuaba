@@ -17,6 +17,7 @@ func RenderFromContent(content string, data interface{}) string {
 		"toAttrName": GetAttributeName,
 		"toType":     GetAttributeType,
 		"toJson":     GetAttributeJson,
+    "toSnake": Snakeze,
 	}).Parse(content)
 
 	buf := &bytes.Buffer{}
