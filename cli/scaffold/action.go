@@ -1,6 +1,9 @@
 package scaffold
 
 import (
+	"strings"
+
+	"github.com/dayvsonlima/catuaba/cli/code_editor"
 	"github.com/dayvsonlima/catuaba/cli/generator"
 	"github.com/dayvsonlima/catuaba/cli/model"
 	"github.com/urfave/cli/v2"
@@ -22,6 +25,7 @@ func Action(c *cli.Context) error {
 	model.BuildModel(data)
 
 	BuildControllers(data)
+	BuildRoutes(data)
 	return nil
 }
 
@@ -48,4 +52,9 @@ func BuildControllers(data model.ModelBuilder) {
 
 func BuildRoutes(data model.ModelBuilder) {
 
+	routes := generator.Render("scaffold/routes.go.tmpl", data)
+
+	code_editor.EditFile("/config/routes.go", func(content string) string {
+		return strings.ReplaceAll(content, "\n}", routes+"\n}")
+	})
 }
