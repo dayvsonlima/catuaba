@@ -8,6 +8,7 @@ import (
 
 	"github.com/dayvsonlima/catuaba/cli/controller"
 	"github.com/dayvsonlima/catuaba/cli/new"
+	"github.com/dayvsonlima/catuaba/cli/scaffold"
 	"github.com/dayvsonlima/catuaba/cli/server"
 
 	"github.com/dayvsonlima/catuaba/cli/model"
@@ -50,10 +51,7 @@ func main() {
 						Name:    "scaffold",
 						Aliases: []string{"s"},
 						Usage:   "generate scaffold",
-						Action: func(c *cli.Context) error {
-							fmt.Println("generete your scaffold here")
-							return nil
-						},
+						Action:  scaffold.Action,
 					},
 				},
 

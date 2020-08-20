@@ -12,7 +12,10 @@ func Render(fileName string, data interface{}) string {
 		"toModelName": func(text string) string {
 			return Camelize(text)
 		},
+		"toSnake":    Snakeze,
 		"camelize":   Camelize,
+		"toPlural":   Pluralize,
+		"toVarName":  CamelizeVar,
 		"toAttrName": GetAttributeName,
 		"toType":     GetAttributeType,
 		"toJson":     GetAttributeJson,

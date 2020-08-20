@@ -15,9 +15,15 @@ func Action(c *cli.Context) error {
 
 	data := ModelBuilder{
 		Name:   generator.Camelize(c.Args().Get(0)),
-		Params: getAttributes(c),
+		Params: GetModelAttributes(c),
 	}
 
+	BuildModel(data)
+
+	return nil
+}
+
+func BuildModel(data ModelBuilder) {
 	modelPath := "/app/models/" + generator.Snakeze(data.Name) + ".go"
 
 	generator.GenerateFile("model.go.tmpl", data, modelPath)
@@ -25,11 +31,9 @@ func Action(c *cli.Context) error {
 	code_editor.EditFile("/database/connection.go", func(code string) string {
 		return code_editor.InsertAttribute(code, "AutoMigrate", "&models."+data.Name+"{}")
 	})
-
-	return nil
 }
 
-func getAttributes(c *cli.Context) []string {
+func GetModelAttributes(c *cli.Context) []string {
 	l := c.Args().Len()
 	var params []string
 

@@ -1,29 +1,16 @@
 package generator
 
 import (
-	"bytes"
 	"fmt"
 	"regexp"
 	"strings"
-	"text/template"
 	"unicode"
+
+	"github.com/jinzhu/inflection"
 )
 
-func RenderFromContent(content string, data interface{}) string {
-	t, _ := template.New("tmpm").Funcs(template.FuncMap{
-		"toModelName": func(text string) string {
-			return Camelize(text)
-		},
-		"toAttrName": GetAttributeName,
-		"toType":     GetAttributeType,
-		"toJson":     GetAttributeJson,
-    "toSnake": Snakeze,
-	}).Parse(content)
-
-	buf := &bytes.Buffer{}
-	t.Execute(buf, data)
-
-	return buf.String()
+func Pluralize(in string) string {
+	return inflection.Plural(in)
 }
 
 func Camelize(in string) string {
@@ -34,6 +21,30 @@ func Camelize(in string) string {
 		if r == '_' {
 			continue
 		}
+		if i == 0 || runes[i-1] == '_' {
+			out = append(out, unicode.ToUpper(r))
+			continue
+		}
+		out = append(out, r)
+	}
+
+	return string(out)
+}
+
+func CamelizeVar(in string) string {
+	runes := []rune(in)
+	var out []rune
+
+	for i, r := range runes {
+		if r == '_' {
+			continue
+		}
+
+		if i == 0 {
+			out = append(out, unicode.ToLower(r))
+			continue
+		}
+
 		if i == 0 || runes[i-1] == '_' {
 			out = append(out, unicode.ToUpper(r))
 			continue
