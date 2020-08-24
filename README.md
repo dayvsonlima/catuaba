@@ -2,6 +2,8 @@
 
 Fast, super productive and aphrodisiac web-framework written in golang
 
+![Catuaba new command example](catuaba-new-command.gif)
+
 # Setup
 
 Install using go get command
