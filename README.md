@@ -2,7 +2,8 @@
 
 Fast, super productive and aphrodisiac web-framework written in golang
 
-![Catuaba new command example](catuaba-new-command.gif)
+![Catuaba Framework Golang new command example](catuaba-new-command.gif)
+
 
 # Setup
 
@@ -15,6 +16,8 @@ go get -u github.com/dayvsonlima/catuaba
 Install the [tdm-gcc](https://jmeubank.github.io/tdm-gcc/) 
 
 # Command List
+![Catuaba Framework Golang scaffold command example](catuaba-scaffold-command-example.gif)
+
 | Command | Description | Usage |
 | --- | --- | --- |
 |--help| provide cli instructions | `catuaba --help`
