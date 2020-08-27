@@ -9,14 +9,14 @@ import (
 // Adds a new package to golang code inside the "import" statement
 func AddImport(code, path string) string {
 
-	rgx := `import(.|)\(((.|\n)+)\)`
+	rgx := `import(.|)\(((.|\n)+?)\)`
 	compiledRegex := regexp.MustCompile(rgx)
 	submatch := compiledRegex.FindStringSubmatch(code)
 
 	pkgString := submatch[2]
 	pkgs := strings.Split(pkgString, "\n")
 
-	pkgs = append(pkgs, path)
+	pkgs = append(pkgs, "\""+path+"\"")
 	normalized := normalizePkgs(pkgs)
 	output := "import (\n" + strings.Join(normalized, "\n") + "\n)"
 

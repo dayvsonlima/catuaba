@@ -55,6 +55,12 @@ func BuildRoutes(data model.ModelBuilder) {
 	routes := generator.Render("scaffold/routes.go.tmpl", data)
 
 	code_editor.EditFile("/config/routes.go", func(content string) string {
-		return strings.ReplaceAll(content, "\n}", routes+"\n}")
+
+		newPkg := "application/app/controllers/" + generator.Snakeze(generator.Pluralize(data.Name))
+
+		routesString := strings.ReplaceAll(content, "\n}", routes+"\n}")
+		routesString = code_editor.AddImport(routesString, newPkg)
+
+		return routesString
 	})
 }
