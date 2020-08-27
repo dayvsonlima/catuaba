@@ -18,7 +18,7 @@ func AddImport(code, path string) string {
 
 	pkgs = append(pkgs, "\""+path+"\"")
 	normalized := normalizePkgs(pkgs)
-	output := "import (\n" + strings.Join(normalized, "\n") + "\n)"
+	output := "import (\n\t" + strings.Join(normalized, "\n\t") + "\n)"
 
 	return compiledRegex.ReplaceAllString(code, output)
 }
@@ -30,6 +30,7 @@ func normalizePkgs(pkgs []string) []string {
 
 	for _, value := range pkgs {
 		current := strings.Trim(value, " ")
+		current = strings.Trim(current, "\t")
 		check[current] = 1
 	}
 
