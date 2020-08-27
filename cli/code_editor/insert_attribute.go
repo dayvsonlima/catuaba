@@ -5,6 +5,8 @@ import (
 	"strings"
 )
 
+// InsertAttribute
+// insert a new attribute in a already called method
 func InsertAttribute(code, methodName, newAttribute string) string {
 
 	rgx := `(m?)\.` + methodName + `\(((.|\n|)+)\)`
