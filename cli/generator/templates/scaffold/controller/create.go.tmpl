@@ -21,8 +21,8 @@ func Create(ctx *gin.Context) {
 	}
 
 	{{.Name|toVarName}} := &models.{{.Name|toModelName}}{
-		Title:   params.Title,
-		Content: params.Content,
+		{{ range .Params}}{{. | toAttrName}}: params.{{. | toAttrName}},
+		{{ end }}
 	}
 
 	db.Create({{.Name|toVarName}})
