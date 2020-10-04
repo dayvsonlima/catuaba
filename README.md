@@ -1,3 +1,5 @@
+<p align="center"><img src="catuaba-mascote.png" width="250"></p>
+
 # Catuaba Framework
 
 Fast, super productive and aphrodisiac web-framework written in golang
