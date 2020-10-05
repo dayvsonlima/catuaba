@@ -1,5 +1,7 @@
 <p align="center"><img src="catuaba-mascote.png" width="250"></p>
 
+[![GitHub Actions](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fdayvsonlima%2Fcatuaba%2Fbadge&label=build&logo=none)](https://actions-badge.atrox.dev/dayvsonlima/catuaba/goto)
+
 # Catuaba Framework
 
 Fast, super productive and aphrodisiac web-framework written in golang
