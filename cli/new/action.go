@@ -1,7 +1,7 @@
 package new
 
 import (
-	"github.com/dayvsonlima/catuaba/cli/generator"
+	"github.com/dayvsonlima/catuaba/generator"
 	"github.com/urfave/cli/v2"
 )
 

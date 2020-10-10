@@ -2,7 +2,7 @@ package model
 
 import (
 	"github.com/dayvsonlima/catuaba/cli/code_editor"
-	"github.com/dayvsonlima/catuaba/cli/generator"
+	"github.com/dayvsonlima/catuaba/generator"
 	"github.com/urfave/cli/v2"
 )
 

@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/dayvsonlima/catuaba/cli/generator"
+	"github.com/dayvsonlima/catuaba/generator"
 )
 
 func TestCamelizeVar(t *testing.T) {
