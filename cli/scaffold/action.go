@@ -43,18 +43,18 @@ func BuildControllers(data model.ModelBuilder) {
 			Params:     data.Params,
 		}
 
-		controllerPath := "/app/controllers/" + controllerName + "/" + methodName + ".go"
+		controllerPath := "app/controllers/" + controllerName + "/" + methodName + ".go"
 		generator.GenerateFile("scaffold/controller/"+methodName+".go.tmpl", data, controllerPath)
 	}
 
-	generator.GenerateFile("scaffold/controller/shared.go.tmpl", data, "/app/controllers/"+controllerName+"/shared.go")
+	generator.GenerateFile("scaffold/controller/shared.go.tmpl", data, "app/controllers/"+controllerName+"/shared.go")
 }
 
 func BuildRoutes(data model.ModelBuilder) {
 
 	routes := generator.Render("scaffold/routes.go.tmpl", data)
 
-	code_editor.EditFile("/config/routes.go", func(content string) string {
+	code_editor.EditFile("config/routes.go", func(content string) string {
 
 		newPkg := "application/app/controllers/" + generator.Snakeze(generator.Pluralize(data.Name))
 

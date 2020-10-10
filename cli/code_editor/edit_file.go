@@ -11,7 +11,7 @@ func EditFile(filePath string, f func(content string) string) error {
 
 	var (
 		currentPath, _ = os.Getwd()
-		fullPath       = currentPath + filePath
+		fullPath       = currentPath + "/" + filePath
 		code           = GetFileContent(filePath)
 		result         = f(code)
 	)

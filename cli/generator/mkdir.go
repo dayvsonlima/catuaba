@@ -9,7 +9,7 @@ func Mkdir(path string) {
 	currentPath, _ := os.Getwd()
 	fullPath := currentPath + "/" + path
 
-	fmt.Println(fullPath)
+	fmt.Println(path)
 
 	_ = os.Mkdir(fullPath, 0755)
 }

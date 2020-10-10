@@ -8,7 +8,7 @@ import (
 
 func GenerateFile(template string, data interface{}, filePath string) error {
 	currentPath, _ := os.Getwd()
-	fullPath := currentPath + filePath
+	fullPath := currentPath + "/" + filePath
 
 	content := Render(template, data)
 	err := ioutil.WriteFile(fullPath, []byte(content), 0644)
@@ -18,7 +18,7 @@ func GenerateFile(template string, data interface{}, filePath string) error {
 		return err
 	}
 
-	fmt.Println(fullPath)
+	fmt.Println(filePath)
 
 	return nil
 }

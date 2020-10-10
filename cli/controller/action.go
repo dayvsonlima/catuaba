@@ -24,7 +24,7 @@ func Action(c *cli.Context) error {
 			MethodName: methodName,
 		}
 
-		controllerPath := "/app/controllers/" + generator.Snakeze(name) + "/" + methodName + ".go"
+		controllerPath := "app/controllers/" + generator.Snakeze(name) + "/" + methodName + ".go"
 		generator.GenerateFile("controller.go.tmpl", data, controllerPath)
 	}
 

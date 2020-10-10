@@ -24,11 +24,11 @@ func Action(c *cli.Context) error {
 }
 
 func BuildModel(data ModelBuilder) {
-	modelPath := "/app/models/" + generator.Snakeze(data.Name) + ".go"
+	modelPath := "app/models/" + generator.Snakeze(data.Name) + ".go"
 
 	generator.GenerateFile("model.go.tmpl", data, modelPath)
 
-	code_editor.EditFile("/database/connection.go", func(code string) string {
+	code_editor.EditFile("database/connection.go", func(code string) string {
 		return code_editor.InsertAttribute(code, "AutoMigrate", "&models."+data.Name+"{}")
 	})
 }
