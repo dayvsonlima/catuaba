@@ -3,8 +3,8 @@ package scaffold
 import (
 	"strings"
 
-	"github.com/dayvsonlima/catuaba/cli/code_editor"
 	"github.com/dayvsonlima/catuaba/cli/model"
+	"github.com/dayvsonlima/catuaba/code_editor"
 	"github.com/dayvsonlima/catuaba/generator"
 	"github.com/urfave/cli/v2"
 )
