@@ -28,7 +28,7 @@ func EditFile(filePath string, f func(content string) string) error {
 
 func GetFileContent(filePath string) string {
 	currentPath, _ := os.Getwd()
-	content, err := ioutil.ReadFile(currentPath + filePath)
+	content, err := ioutil.ReadFile(currentPath + "/" + filePath)
 	if err != nil {
 		log.Fatal(err)
 	}
