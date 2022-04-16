@@ -13,11 +13,11 @@ Fast, super productive and aphrodisiac web-framework written in golang
 
 Install using go get command
 ```
-go get -u github.com/dayvsonlima/catuaba
+go install github.com/dayvsonlima/catuaba@latest
 ```
 
 ## On Windows
-Install the [tdm-gcc](https://jmeubank.github.io/tdm-gcc/) 
+Install the [tdm-gcc](https://jmeubank.github.io/tdm-gcc/)
 
 # Command List
 ![Catuaba Framework Golang scaffold command example](catuaba-scaffold-command-example.gif)
