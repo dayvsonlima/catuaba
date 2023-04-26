@@ -6,6 +6,7 @@ import (
 	"github.com/dayvsonlima/catuaba/cli/model"
 	"github.com/dayvsonlima/catuaba/code_editor"
 	"github.com/dayvsonlima/catuaba/generator"
+	"github.com/dayvsonlima/catuaba/templates/scaffold/controller"
 	"github.com/urfave/cli/v2"
 )
 
@@ -44,10 +45,18 @@ func BuildControllers(data model.ModelBuilder) {
 		}
 
 		controllerPath := "app/controllers/" + controllerName + "/" + methodName + ".go"
-		generator.GenerateFile("scaffold/controller/"+methodName+".go.tmpl", data, controllerPath)
+
+		controllers := map[string]string{}
+		controllers["index"] = controller.Index
+		controllers["show"] = controller.Show
+		controllers["update"] = controller.Update
+		controllers["create"] = controller.Create
+		controllers["delete"] = controller.Delete
+
+		generator.GenerateFromContent(controllers[methodName], data, controllerPath)
 	}
 
-	generator.GenerateFile("scaffold/controller/shared.go.tmpl", data, "app/controllers/"+controllerName+"/shared.go")
+	generator.GenerateFromContent(controller.Shared, data, "app/controllers/"+controllerName+"/shared.go")
 }
 
 func BuildRoutes(data model.ModelBuilder) {
