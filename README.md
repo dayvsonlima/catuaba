@@ -11,13 +11,32 @@ Fast, super productive and aphrodisiac web-framework written in golang
 
 # Setup
 
-Install using go get command
+## Mac OS
+
+### Intel
+```bash
+curl -L https://github.com/dayvsonlima/catuaba/releases/latest/download/catuaba-darwin-arm64.tar.gz | tar xz && sudo mv catuaba /usr/local/bin/
 ```
-go get -u github.com/dayvsonlima/catuaba
+
+### Apple Silicon
+```bash
+```bash
+curl -L https://github.com/dayvsonlima/catuaba/releases/latest/download/catuaba-darwin-arm64.tar.gz | tar xz && sudo mv catuaba /usr/local/bin/
+```
+
+## Linux
+
+```bash
+curl -L https://github.com/dayvsonlima/catuaba/releases/latest/download/catuaba-linux-amd64.tar.gz | tar xz && sudo mv catuaba /usr/local/bin/
 ```
 
 ## On Windows
-Install the [tdm-gcc](https://jmeubank.github.io/tdm-gcc/) 
+
+Download the exe and add the path to your environment variables
+```
+https://github.com/dayvsonlima/catuaba/releases/latest/download/catuaba-windows-amd64.zip
+
+```
 
 # Command List
 ![Catuaba Framework Golang scaffold command example](catuaba-scaffold-command-example.gif)
