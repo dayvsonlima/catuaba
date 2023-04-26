@@ -23,6 +23,14 @@ func AddImport(code, path string) string {
 	return compiledRegex.ReplaceAllString(code, output)
 }
 
+func AddImportIfNotExist(code, path string) string {
+	if !strings.Contains(code, path) {
+		code = AddImport(code, path)
+	}
+
+	return code
+}
+
 func normalizePkgs(pkgs []string) []string {
 
 	check := make(map[string]int)

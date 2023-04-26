@@ -3,8 +3,6 @@ package templates
 var DatabaseConnection = `package database
 
 import (
-	"application/app/models"
-
 	"github.com/jinzhu/gorm"
 
 	// stupid vscode rule

@@ -30,6 +30,8 @@ func BuildModel(data ModelBuilder) {
 	generator.GenerateFromContent(templates.Model, data, modelPath)
 
 	code_editor.EditFile("database/connection.go", func(code string) string {
+		code = code_editor.AddImportIfNotExist(code, "application/app/models")
+
 		return code_editor.InsertAttribute(code, "AutoMigrate", "&models."+data.Name+"{}")
 	})
 }
