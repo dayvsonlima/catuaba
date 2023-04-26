@@ -2,6 +2,7 @@ package new
 
 import (
 	"github.com/dayvsonlima/catuaba/generator"
+	"github.com/dayvsonlima/catuaba/templates"
 	"github.com/urfave/cli/v2"
 )
 
@@ -18,10 +19,9 @@ func Action(c *cli.Context) error {
 
 	// Root
 	generator.Mkdir(data.Name)
-	generator.GenerateFile("application/go.mod.tmpl", data, data.Name+"/go.mod")
-	generator.GenerateFile("application/go.sum.tmpl", data, data.Name+"/go.sum")
-	generator.GenerateFile("application/application.go.tmpl", data, data.Name+"/application.go")
-	generator.GenerateFile("application/application.go.tmpl", data, data.Name+"/application.go")
+	generator.GenerateFromContent(templates.Gomod, data, data.Name+"/go.mod")
+	generator.GenerateFromContent(templates.Gosum, data, data.Name+"/go.sum")
+	generator.GenerateFromContent(templates.Application, data, data.Name+"/application.go")
 
 	// Config
 	generator.Mkdir(data.Name + "/config")

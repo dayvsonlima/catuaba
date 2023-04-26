@@ -26,3 +26,23 @@ func Render(fileName string, data interface{}) string {
 
 	return buf.String()
 }
+
+func RenderFromContent(content string, data interface{}) string {
+	t, _ := template.New("tmpm").Funcs(template.FuncMap{
+		"toModelName": func(text string) string {
+			return Camelize(text)
+		},
+		"toSnake":    Snakeze,
+		"camelize":   Camelize,
+		"toPlural":   Pluralize,
+		"toVarName":  CamelizeVar,
+		"toAttrName": GetAttributeName,
+		"toType":     GetAttributeType,
+		"toJson":     GetAttributeJson,
+	}).Parse(content)
+
+	buf := &bytes.Buffer{}
+	t.Execute(buf, data)
+
+	return buf.String()
+}
