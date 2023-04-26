@@ -3,6 +3,7 @@ package model
 import (
 	"github.com/dayvsonlima/catuaba/code_editor"
 	"github.com/dayvsonlima/catuaba/generator"
+	"github.com/dayvsonlima/catuaba/templates"
 	"github.com/urfave/cli/v2"
 )
 
@@ -26,7 +27,7 @@ func Action(c *cli.Context) error {
 func BuildModel(data ModelBuilder) {
 	modelPath := "app/models/" + generator.Snakeze(data.Name) + ".go"
 
-	generator.GenerateFile("model.go.tmpl", data, modelPath)
+	generator.GenerateFromContent(templates.Model, data, modelPath)
 
 	code_editor.EditFile("database/connection.go", func(code string) string {
 		return code_editor.InsertAttribute(code, "AutoMigrate", "&models."+data.Name+"{}")

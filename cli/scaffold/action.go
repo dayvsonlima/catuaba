@@ -6,6 +6,7 @@ import (
 	"github.com/dayvsonlima/catuaba/cli/model"
 	"github.com/dayvsonlima/catuaba/code_editor"
 	"github.com/dayvsonlima/catuaba/generator"
+	"github.com/dayvsonlima/catuaba/templates"
 	"github.com/dayvsonlima/catuaba/templates/scaffold/controller"
 	"github.com/urfave/cli/v2"
 )
@@ -61,7 +62,7 @@ func BuildControllers(data model.ModelBuilder) {
 
 func BuildRoutes(data model.ModelBuilder) {
 
-	routes := generator.Render("scaffold/routes.go.tmpl", data)
+	routes := generator.RenderFromContent(templates.Routes, data)
 
 	code_editor.EditFile("config/routes.go", func(content string) string {
 
