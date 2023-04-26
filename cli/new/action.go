@@ -25,20 +25,20 @@ func Action(c *cli.Context) error {
 
 	// Config
 	generator.Mkdir(data.Name + "/config")
-	generator.GenerateFile("application/config/routes.go.tmpl", data, data.Name+"/config/routes.go")
+	generator.GenerateFromContent(templates.Routes, data, data.Name+"/config/routes.go")
 
 	// Database
 	generator.Mkdir(data.Name + "/database")
-	generator.GenerateFile("application/database/connection.go.tmpl", data, data.Name+"/database/connection.go")
+	generator.GenerateFromContent(templates.DatabaseConnection, data, data.Name+"/database/connection.go")
 
 	// Controllers structure
 	generator.Mkdir(data.Name + "/app")
 	generator.Mkdir(data.Name + "/app/controllers")
-	generator.GenerateFile("application/app/controllers/.keep", data, data.Name+"/app/controllers/.keep")
+	generator.GenerateFromContent("", data, data.Name+"/app/controllers/.keep")
 
 	// Models structure
 	generator.Mkdir(data.Name + "/app/models")
-	generator.GenerateFile("application/app/models/.keep", data, data.Name+"/app/models/.keep")
+	generator.GenerateFromContent("", data, data.Name+"/app/models/.keep")
 
 	return nil
 }
