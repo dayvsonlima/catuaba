@@ -20,7 +20,6 @@ curl -L https://github.com/dayvsonlima/catuaba/releases/latest/download/catuaba-
 
 ### Apple Silicon
 ```bash
-```bash
 curl -L https://github.com/dayvsonlima/catuaba/releases/latest/download/catuaba-darwin-arm64.tar.gz | tar xz && sudo mv catuaba /usr/local/bin/
 ```
 
