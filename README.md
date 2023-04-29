@@ -15,7 +15,7 @@ Fast, super productive and aphrodisiac web-framework written in golang
 
 ### Intel
 ```bash
-curl -L https://github.com/dayvsonlima/catuaba/releases/latest/download/catuaba-darwin-arm64.tar.gz | tar xz && sudo mv catuaba /usr/local/bin/
+curl -L https://github.com/dayvsonlima/catuaba/releases/latest/download/catuaba-darwin-amd64.tar.gz | tar xz && sudo mv catuaba /usr/local/bin/
 ```
 
 ### Apple Silicon
