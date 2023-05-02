@@ -18,7 +18,9 @@ type UpdateParams struct {
 // Update .
 func Update(ctx *gin.Context) {
 	var {{.Name|toVarName}} models.{{.Name|toModelName}}
-	if err := db.Where("id = ?", ctx.Param("id")).First(&{{.Name|toVarName}}).Error; err != nil {
+  db.First(&{{.Name|toVarName}}, ctx.Param("id"))
+
+	if {{.Name|toVarName}}.ID == 0 {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
 		return
 	}
