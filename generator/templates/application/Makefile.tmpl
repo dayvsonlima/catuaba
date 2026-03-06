@@ -1,15 +1,30 @@
-.PHONY: dev build test lint clean docker-up docker-down tidy help setup
+.PHONY: dev dev-stop build test lint clean docker-up docker-down tidy help setup
 
 APP_NAME={{.Name}}
 GOBIN=$(shell go env GOPATH)/bin
+PID_DIR=tmp/pids
 
 ## dev: Start development with hot reload (templ + tailwind + go)
-dev:
+dev: dev-stop
+	@mkdir -p $(PID_DIR)
 	@command -v templ >/dev/null 2>&1 || { echo "Installing templ..."; go install github.com/a-h/templ/cmd/templ@latest; }
 	@test -d node_modules || npm install
 	@npx @tailwindcss/cli -i static/css/input.css -o static/css/app.css
-	@PATH="$(GOBIN):$$PATH" templ generate -watch -proxy="http://localhost:8080" -cmd="go run ." &
+	@PATH="$(GOBIN):$$PATH" templ generate -watch -proxy="http://localhost:8080" -cmd="go run ." & echo $$! > $(PID_DIR)/templ.pid
 	@npx @tailwindcss/cli -i static/css/input.css -o static/css/app.css --watch
+
+## dev-stop: Stop running dev processes
+dev-stop:
+	@if [ -d $(PID_DIR) ]; then \
+		for f in $(PID_DIR)/*.pid; do \
+			if [ -f "$$f" ]; then \
+				pid=$$(cat "$$f"); \
+				kill -TERM -$$pid 2>/dev/null || kill -TERM $$pid 2>/dev/null; \
+				rm -f "$$f"; \
+			fi; \
+		done; \
+	fi
+	@lsof -ti :8080 -ti :7331 2>/dev/null | xargs kill -9 2>/dev/null || true
 
 ## setup: Install development dependencies
 setup:
