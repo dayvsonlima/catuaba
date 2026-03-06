@@ -125,7 +125,8 @@ func BuildRoutes(data model.ModelBuilder) error {
 		moduleName := generator.ModuleName()
 		newPkg := moduleName + "/app/controllers/" + generator.Snakeze(generator.Pluralize(data.Name))
 
-		routesString := strings.ReplaceAll(content, "\n}", routes+"\n}")
+		marker := "// [catuaba:routes]"
+		routesString := strings.Replace(content, marker, routes+marker, 1)
 		routesString = code_editor.AddImport(routesString, newPkg)
 
 		return routesString

@@ -1,6 +1,10 @@
 package config
 
 import (
+	"{{.Name}}/app/controllers"
+	"{{.Name}}/app/views/pages"
+{{if .Auth}}	"{{.Name}}/app/controllers/auth"
+{{end}}
 	"github.com/gin-gonic/gin"
 )
 
@@ -8,4 +12,28 @@ import (
 // HTML routes are added by: catuaba g scaffold
 // JSON API routes are added by: catuaba g api
 func SetupRoutes(routes *gin.Engine) {
+	// Home
+	routes.GET("/", controllers.Home)
+{{if .Auth}}
+	// Auth routes
+	routes.GET("/login", auth.LoginForm)
+	routes.POST("/login", auth.LoginSubmit)
+	routes.GET("/register", auth.RegisterForm)
+	routes.POST("/register", auth.RegisterSubmit)
+	routes.POST("/logout", auth.Logout)
+{{end}}
+	// [catuaba:routes] — generators inject new routes above this line
+}
+
+// SetupNotFound registers the 404 handler. Called after all routes are defined.
+func SetupNotFound(routes *gin.Engine) {
+	routes.NoRoute(func(ctx *gin.Context) {
+		if len(ctx.Request.URL.Path) > 4 && ctx.Request.URL.Path[:5] == "/api/" {
+			ctx.JSON(404, gin.H{"error": "Not found"})
+			return
+		}
+		ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+		ctx.Writer.WriteHeader(404)
+		pages.NotFound().Render(ctx.Request.Context(), ctx.Writer)
+	})
 }

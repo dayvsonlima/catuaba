@@ -9,10 +9,7 @@ import (
 	"syscall"
 	"time"
 
-	"{{.Name}}/app/controllers"
-	"{{.Name}}/app/views/pages"
-{{if .Auth}}	"{{.Name}}/app/controllers/auth"
-{{end}}	"{{.Name}}/config"
+	"{{.Name}}/config"
 	"{{.Name}}/database"
 	"{{.Name}}/middleware"
 
@@ -49,28 +46,9 @@ func main() {
 	// Static files
 	engine.Static("/static", "./static")
 
-	// Home page
-	engine.GET("/", controllers.Home)
-{{if .Auth}}
-	// Auth routes
-	engine.GET("/login", auth.LoginForm)
-	engine.POST("/login", auth.LoginSubmit)
-	engine.GET("/register", auth.RegisterForm)
-	engine.POST("/register", auth.RegisterSubmit)
-	engine.POST("/logout", auth.Logout)
-{{end}}
+	// All routes (home, auth, scaffold, API) are defined in config/routes.go
 	config.SetupRoutes(engine)
-
-	// 404 handler
-	engine.NoRoute(func(ctx *gin.Context) {
-		if len(ctx.Request.URL.Path) > 4 && ctx.Request.URL.Path[:5] == "/api/" {
-			ctx.JSON(404, gin.H{"error": "Not found"})
-			return
-		}
-		ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
-		ctx.Writer.WriteHeader(404)
-		pages.NotFound().Render(ctx.Request.Context(), ctx.Writer)
-	})
+	config.SetupNotFound(engine)
 
 	srv := &http.Server{
 		Addr:    ":" + config.App.AppPort,

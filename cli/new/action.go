@@ -129,6 +129,7 @@ func Action(c *cli.Context) error {
 		{"application/air.toml.tmpl", data.Name + "/.air.toml"},
 		{"application/README.md.tmpl", data.Name + "/README.md"},
 		{"application/CLAUDE.md.tmpl", data.Name + "/CLAUDE.md"},
+		{"application/dot-mcp.json.tmpl", data.Name + "/.mcp.json"},
 		{"application/tailwind.config.js.tmpl", data.Name + "/tailwind.config.js"},
 		{"application/static/css/input.css.tmpl", data.Name + "/static/css/input.css"},
 		{"application/controllers/home.go.tmpl", data.Name + "/app/controllers/home.go"},

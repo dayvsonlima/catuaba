@@ -105,7 +105,8 @@ func BuildRoutes(data model.ModelBuilder) error {
 		newPkg := moduleName + "/app/controllers/api/" + resourcePkg
 		alias := "api_" + resourcePkg
 
-		routesString := strings.ReplaceAll(content, "\n}", routes+"\n}")
+		marker := "// [catuaba:routes]"
+		routesString := strings.Replace(content, marker, routes+marker, 1)
 		routesString = code_editor.AddAliasedImport(routesString, alias, newPkg)
 
 		return routesString

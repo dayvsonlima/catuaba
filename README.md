@@ -162,7 +162,6 @@ This creates **everything**:
 | Migration | `database/migrations/*_create_posts.{up,down}.sql` |
 | HTML handlers | `app/controllers/posts/` (index, show, new, create, edit, update, delete) |
 | Templ views | `app/views/posts/` (index, show, form) |
-| JSON API | `app/controllers/api/posts/` (index, show, create, update, delete + tests) |
 | Routes | Auto-injected into `config/routes.go` |
 
 ### 3. Start developing
@@ -278,6 +277,30 @@ catuaba g view about                             # Templ page
 
 ---
 
+## Documentation
+
+For detailed guides on each part of the framework:
+
+- **[Models](docs/models.md)** — GORM models, field types, relationships, migrations, querying
+- **[Controllers](docs/controllers.md)** — HTML handlers vs JSON API, form binding, route patterns
+- **[Views](docs/views.md)** — Templ templates, layouts, components, HTMX, Alpine.js, Tailwind CSS
+- **[Middleware](docs/middleware.md)** — Built-in stack, CSRF, sessions, flash messages, auth, custom middleware
+
+External references:
+
+| Topic | Link |
+|-------|------|
+| HTTP framework | [Gin documentation](https://gin-gonic.com/docs/) |
+| ORM | [GORM documentation](https://gorm.io/docs/) |
+| Views | [Templ guide](https://templ.guide/) |
+| Interactivity | [HTMX documentation](https://htmx.org/docs/) |
+| Client-side JS | [Alpine.js documentation](https://alpinejs.dev/start-here) |
+| CSS | [Tailwind CSS documentation](https://tailwindcss.com/docs) |
+| Sessions | [SCS documentation](https://github.com/alexedwards/scs) |
+| Migrations | [golang-migrate](https://github.com/golang-migrate/migrate) |
+
+---
+
 ## Project Structure
 
 ```
@@ -384,7 +407,9 @@ Catuaba ships with a built-in [MCP](https://modelcontextprotocol.io/) server. AI
 
 ### Setup
 
-Add to your `.mcp.json` or `claude_desktop_config.json`:
+Every generated app includes a `.mcp.json` file — just open the project in Claude Code or Cursor and the MCP server is auto-discovered.
+
+For manual setup, add to your `.mcp.json` or `claude_desktop_config.json`:
 
 ```json
 {
