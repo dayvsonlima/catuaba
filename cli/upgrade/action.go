@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -15,7 +17,7 @@ import (
 
 const (
 	githubReleaseURL = "https://api.github.com/repos/dayvsonlima/catuaba/releases/latest"
-	installPkg       = "github.com/dayvsonlima/catuaba@latest"
+	installPkg       = "github.com/dayvsonlima/catuaba"
 )
 
 type githubRelease struct {
@@ -49,22 +51,49 @@ func Action(c *cli.Context) error {
 	output.Info("New version available: %s → %s", currentVersion, latest)
 	output.Info("Upgrading...")
 
-	cmd := exec.Command("go", "install", installPkg)
+	// Install the exact version, bypassing proxy cache
+	target := fmt.Sprintf("%s@v%s", installPkg, latest)
+	cmd := exec.Command("go", "install", target)
+	cmd.Env = append(os.Environ(),
+		"GOPROXY=direct",
+		"GONOSUMCHECK="+installPkg,
+		"GONOSUMDB="+installPkg,
+	)
 	cmd.Stdout = c.App.Writer
 	cmd.Stderr = c.App.ErrWriter
 	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("upgrade failed: %w", err)
 	}
 
-	// Verify the upgrade
-	out, err := exec.Command("catuaba", "--version").CombinedOutput()
+	// Copy binary to the same location as the current executable
+	currentBin, err := os.Executable()
 	if err == nil {
-		output.Success("Upgraded to %s", strings.TrimSpace(string(out)))
-	} else {
-		output.Success("Upgrade complete! New version: %s", latest)
+		currentBin, _ = filepath.EvalSymlinks(currentBin)
+	}
+	gobinBin := filepath.Join(gobin(), "catuaba")
+
+	if err == nil && currentBin != gobinBin {
+		if data, err := os.ReadFile(gobinBin); err == nil {
+			if err := os.WriteFile(currentBin, data, 0755); err != nil {
+				output.Warning("Installed to %s but could not update %s: %v", gobinBin, currentBin, err)
+				output.Info("Run: cp %s %s", gobinBin, currentBin)
+			}
+		}
 	}
 
+	output.Success("Upgraded to v%s", latest)
 	return nil
+}
+
+func gobin() string {
+	if bin := os.Getenv("GOBIN"); bin != "" {
+		return bin
+	}
+	out, err := exec.Command("go", "env", "GOPATH").Output()
+	if err != nil {
+		return ""
+	}
+	return filepath.Join(strings.TrimSpace(string(out)), "bin")
 }
 
 func fetchLatestVersion() (string, error) {
