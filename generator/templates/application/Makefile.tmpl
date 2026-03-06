@@ -1,12 +1,19 @@
-.PHONY: dev build test lint clean docker-up docker-down tidy help
+.PHONY: dev build test lint clean docker-up docker-down tidy help setup
 
 APP_NAME={{.Name}}
 
 ## dev: Start development with hot reload (templ + tailwind + go)
 dev:
+	@command -v wgo >/dev/null 2>&1 || { echo "Installing wgo..."; go install github.com/bokwoon95/wgo@latest; }
+	@command -v templ >/dev/null 2>&1 || { echo "Installing templ..."; go install github.com/a-h/templ/cmd/templ@latest; }
 	@wgo -file .go -file .templ templ generate :: \
 	 wgo run . :: \
 	 wgo -file .templ -file .css npx @tailwindcss/cli -i static/css/input.css -o static/css/app.css --watch
+
+## setup: Install development dependencies
+setup:
+	go install github.com/bokwoon95/wgo@latest
+	go install github.com/a-h/templ/cmd/templ@latest
 
 ## build: Build the application binary
 build:
