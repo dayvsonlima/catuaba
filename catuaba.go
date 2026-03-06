@@ -27,7 +27,7 @@ import (
 )
 
 func main() {
-	version := "0.1.8"
+	version := "0.1.9"
 	app := &cli.App{
 		Name:     "catuaba",
 		Usage:    "Build full-stack Go web apps in minutes, not days",
