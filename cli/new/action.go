@@ -129,7 +129,7 @@ func Action(c *cli.Context) error {
 		{"application/README.md.tmpl", data.Name + "/README.md"},
 		{"application/CLAUDE.md.tmpl", data.Name + "/CLAUDE.md"},
 		{"application/dot-mcp.json.tmpl", data.Name + "/.mcp.json"},
-		{"application/tailwind.config.js.tmpl", data.Name + "/tailwind.config.js"},
+		{"application/package.json.tmpl", data.Name + "/package.json"},
 		{"application/static/css/input.css.tmpl", data.Name + "/static/css/input.css"},
 		{"application/controllers/home.go.tmpl", data.Name + "/app/controllers/home.go"},
 		{"application/views/layouts/base.templ.tmpl", data.Name + "/app/views/layouts/base.templ"},
@@ -178,7 +178,7 @@ func Action(c *cli.Context) error {
 	output.Info("Next steps:")
 	output.Info("  cd %s", name)
 	output.Info("  go mod tidy")
-	output.Info("  go install github.com/a-h/templ/cmd/templ@latest")
+	output.Info("  npm install")
 	output.Info("  make dev")
 
 	return nil

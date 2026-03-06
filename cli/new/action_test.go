@@ -117,6 +117,11 @@ func TestAction(t *testing.T) {
 		// Verify docker-compose has postgres
 		dcContent, _ := os.ReadFile(filepath.Join(tmpDir, "testapp", "docker-compose.yml"))
 		assert.Contains(t, string(dcContent), "postgres:16-alpine")
+
+		// Verify package.json has tailwind deps
+		pkgContent, _ := os.ReadFile(filepath.Join(tmpDir, "testapp", "package.json"))
+		assert.Contains(t, string(pkgContent), "tailwindcss")
+		assert.Contains(t, string(pkgContent), "@tailwindcss/cli")
 	})
 
 	t.Run("creates project with sqlite", func(t *testing.T) {
