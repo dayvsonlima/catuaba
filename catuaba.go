@@ -29,7 +29,7 @@ func main() {
 	app := &cli.App{
 		Name:    "catuaba",
 		Usage:   "Build full-stack Go web apps in minutes, not days",
-		Version: "0.1.2",
+		Version: "0.1.3",
 		Commands: []*cli.Command{
 			{
 				Name:   "mcp",

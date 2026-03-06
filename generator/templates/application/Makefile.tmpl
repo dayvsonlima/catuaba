@@ -1,6 +1,8 @@
 .PHONY: dev build test lint clean docker-up docker-down tidy help setup
 
 APP_NAME={{.Name}}
+GOBIN=$(shell go env GOPATH)/bin
+export PATH := $(GOBIN):$(PATH)
 
 ## dev: Start development with hot reload (templ + tailwind + go)
 dev:
