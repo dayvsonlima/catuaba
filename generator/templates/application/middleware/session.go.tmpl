@@ -1,0 +1,50 @@
+package middleware
+
+import (
+	"net/http"
+	"time"
+
+	"github.com/alexedwards/scs/v2"
+	"github.com/gin-gonic/gin"
+)
+
+// SessionManager is the global session manager (SCS).
+var SessionManager *scs.SessionManager
+
+func init() {
+	SessionManager = scs.New()
+	SessionManager.Lifetime = 24 * time.Hour
+	SessionManager.Cookie.SameSite = http.SameSiteLaxMode
+}
+
+// Session wraps SCS's LoadAndSave as Gin middleware.
+func Session() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		h := SessionManager.LoadAndSave(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			c.Request = r
+			c.Next()
+		}))
+		h.ServeHTTP(c.Writer, c.Request)
+	}
+}
+
+// GetSessionUserID returns the logged-in user's ID, or 0.
+func GetSessionUserID(c *gin.Context) uint {
+	return uint(SessionManager.GetInt(c.Request.Context(), "userID"))
+}
+
+// GetSessionUserName returns the logged-in user's name, or "".
+func GetSessionUserName(c *gin.Context) string {
+	return SessionManager.GetString(c.Request.Context(), "userName")
+}
+
+// SetSessionUser stores user info in the session.
+func SetSessionUser(c *gin.Context, userID uint, userName string) {
+	SessionManager.Put(c.Request.Context(), "userID", int(userID))
+	SessionManager.Put(c.Request.Context(), "userName", userName)
+}
+
+// ClearSession destroys the current session.
+func ClearSession(c *gin.Context) {
+	SessionManager.Destroy(c.Request.Context())
+}

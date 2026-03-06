@@ -9,34 +9,62 @@ import (
 
 func TestAddImport(t *testing.T) {
 
-	code := `package fake_package
+	t.Run("adds a new import to existing imports", func(t *testing.T) {
+		code := `package fake_package
 
-	import (
-		"fmt"
-	)`
+import (
+	"fmt"
+)
+`
+		newPkg := "github.com/urfave/cli/v2"
+		actual := code_editor.AddImport(code, newPkg)
 
-	newPkg := "github.com/urfave/cli/v2"
+		assert.Contains(t, actual, newPkg)
+		assert.Contains(t, actual, "fmt")
+	})
 
-	actual := code_editor.AddImport(code, newPkg)
+	t.Run("does not duplicate existing import", func(t *testing.T) {
+		code := `package fake_package
 
-	assert.Contains(t, actual, newPkg)
-	assert.Contains(t, actual, "fmt")
+import (
+	"fmt"
+)
+`
+		actual := code_editor.AddImport(code, "fmt")
+		assert.Contains(t, actual, "fmt")
+	})
+
+	t.Run("handles multiple existing imports", func(t *testing.T) {
+		code := `package fake_package
+
+import (
+	"fmt"
+	"net/http"
+)
+`
+		actual := code_editor.AddImport(code, "os")
+		assert.Contains(t, actual, "fmt")
+		assert.Contains(t, actual, "net/http")
+		assert.Contains(t, actual, "os")
+	})
 }
 
 func TestAddImportIfNotExist(t *testing.T) {
 
 	code := `package fake_package
 
-  import (
-    "fmt"
-  )`
+import (
+	"fmt"
+)
+`
 
-	newPkg := "github.com/urfave/cli/v2"
+	t.Run("adds import when not present", func(t *testing.T) {
+		newPkg := "github.com/urfave/cli/v2"
+		actual := code_editor.AddImportIfNotExist(code, newPkg)
 
-	actual := code_editor.AddImportIfNotExist(code, newPkg)
-
-	assert.Contains(t, actual, newPkg)
-	assert.Contains(t, actual, "fmt")
+		assert.Contains(t, actual, newPkg)
+		assert.Contains(t, actual, "fmt")
+	})
 
 	t.Run("should not add if already exists", func(t *testing.T) {
 		actual := code_editor.AddImportIfNotExist(code, "fmt")

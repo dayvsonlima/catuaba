@@ -1,0 +1,9 @@
+
+
+    // {{.Name}} API routes
+    routes.GET("/api/{{.Name|toPlural|toSnake}}", api_{{.Name|toPlural|toSnake}}.Index)
+    routes.POST("/api/{{.Name|toPlural|toSnake}}", api_{{.Name|toPlural|toSnake}}.Create)
+    routes.GET("/api/{{.Name|toPlural|toSnake}}/:id", api_{{.Name|toPlural|toSnake}}.Show)
+    routes.PUT("/api/{{.Name|toPlural|toSnake}}/:id", api_{{.Name|toPlural|toSnake}}.Update)
+    routes.PATCH("/api/{{.Name|toPlural|toSnake}}/:id", api_{{.Name|toPlural|toSnake}}.Update)
+    routes.DELETE("/api/{{.Name|toPlural|toSnake}}/:id", api_{{.Name|toPlural|toSnake}}.Delete)

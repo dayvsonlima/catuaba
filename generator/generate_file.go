@@ -2,24 +2,26 @@ package generator
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
+
+	"github.com/dayvsonlima/catuaba/cli/output"
 )
 
-func GenerateFile(template string, data interface{}, filePath string) error {
+func GenerateFile(tmpl string, data interface{}, filePath string) error {
 	currentPath, _ := os.Getwd()
 	fullPath := currentPath + "/" + filePath
 
-	content := Render(template, data)
-	err := ioutil.WriteFile(fullPath, []byte(content), 0644)
-
+	content, err := Render(tmpl, data)
 	if err != nil {
-		fmt.Printf("Unable to write file: %v", err)
+		return fmt.Errorf("rendering %s: %w", tmpl, err)
+	}
+
+	if err := os.WriteFile(fullPath, []byte(content), 0644); err != nil {
+		output.Error("Unable to write file: %v", err)
 		return err
 	}
 
-	fmt.Println(filePath)
-
+	output.Create(filePath)
 	return nil
 }
 
@@ -27,15 +29,16 @@ func GenerateFromContent(content string, data interface{}, filePath string) erro
 	currentPath, _ := os.Getwd()
 	fullPath := currentPath + "/" + filePath
 
-	result := RenderFromContent(content, data)
-	err := ioutil.WriteFile(fullPath, []byte(result), 0644)
-
+	result, err := RenderFromContent(content, data)
 	if err != nil {
-		fmt.Printf("Unable to write file: %v", err)
+		return fmt.Errorf("rendering content for %s: %w", filePath, err)
+	}
+
+	if err := os.WriteFile(fullPath, []byte(result), 0644); err != nil {
+		output.Error("Unable to write file: %v", err)
 		return err
 	}
 
-	fmt.Println(filePath)
-
+	output.Create(filePath)
 	return nil
 }

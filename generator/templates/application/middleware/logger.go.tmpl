@@ -1,0 +1,47 @@
+package middleware
+
+import (
+	"log/slog"
+	"time"
+
+	"github.com/gin-gonic/gin"
+)
+
+// Logger returns a middleware that logs requests using slog
+func Logger() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		start := time.Now()
+		path := ctx.Request.URL.Path
+		query := ctx.Request.URL.RawQuery
+
+		ctx.Next()
+
+		latency := time.Since(start)
+		status := ctx.Writer.Status()
+
+		attrs := []slog.Attr{
+			slog.Int("status", status),
+			slog.String("method", ctx.Request.Method),
+			slog.String("path", path),
+			slog.String("query", query),
+			slog.Duration("latency", latency),
+			slog.String("ip", ctx.ClientIP()),
+			slog.String("user_agent", ctx.Request.UserAgent()),
+		}
+
+		if requestID := ctx.GetHeader("X-Request-ID"); requestID != "" {
+			attrs = append(attrs, slog.String("request_id", requestID))
+		}
+
+		if len(ctx.Errors) > 0 {
+			attrs = append(attrs, slog.String("errors", ctx.Errors.String()))
+			slog.LogAttrs(ctx.Request.Context(), slog.LevelError, "Request failed", attrs...)
+		} else if status >= 500 {
+			slog.LogAttrs(ctx.Request.Context(), slog.LevelError, "Server error", attrs...)
+		} else if status >= 400 {
+			slog.LogAttrs(ctx.Request.Context(), slog.LevelWarn, "Client error", attrs...)
+		} else {
+			slog.LogAttrs(ctx.Request.Context(), slog.LevelInfo, "Request completed", attrs...)
+		}
+	}
+}

@@ -1,0 +1,27 @@
+package {{.Name|toPlural|toSnake}}
+
+import (
+	"net/http"
+
+	"{{moduleName}}/app/models"
+	views "{{moduleName}}/app/views/{{.Name|toPlural|toSnake}}"
+	"{{moduleName}}/database"
+	"{{moduleName}}/middleware"
+
+	"github.com/gin-gonic/gin"
+)
+
+// Show handles GET /{{.Name|toPlural|toSnake}}/:id
+func Show(ctx *gin.Context) {
+	var {{.Name|toVarName}} models.{{.Name|toModelName}}
+
+	if err := database.DB.First(&{{.Name|toVarName}}, ctx.Param("id")).Error; err != nil {
+		ctx.String(http.StatusNotFound, "Record not found")
+		return
+	}
+
+	flashMsg, flashType := middleware.GetFlash(ctx)
+
+	ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+	views.Show({{.Name|toVarName}}, flashMsg, flashType).Render(ctx.Request.Context(), ctx.Writer)
+}

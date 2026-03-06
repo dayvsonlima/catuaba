@@ -1,0 +1,48 @@
+package config
+
+import (
+	"log"
+	"os"
+
+	"github.com/joho/godotenv"
+)
+
+type AppConfig struct {
+	AppName  string
+	AppPort  string
+	DBDriver string
+	DBHost   string
+	DBPort   string
+	DBUser   string
+	DBPass   string
+	DBName   string
+	DBSSLMode string
+}
+
+var App AppConfig
+
+func Load() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("No .env file found, using environment variables")
+	}
+
+	App = AppConfig{
+		AppName:   getEnv("APP_NAME", "{{.Name}}"),
+		AppPort:   getEnv("APP_PORT", "8080"),
+		DBDriver:  getEnv("DB_DRIVER", "{{.DBDriver}}"),
+		DBHost:    getEnv("DB_HOST", "{{.DBHost}}"),
+		DBPort:    getEnv("DB_PORT", "{{.DBPort}}"),
+		DBUser:    getEnv("DB_USER", "{{.DBUser}}"),
+		DBPass:    getEnv("DB_PASS", ""),
+		DBName:    getEnv("DB_NAME", "{{.DBName}}"),
+		DBSSLMode: getEnv("DB_SSLMODE", "disable"),
+	}
+}
+
+func getEnv(key, fallback string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+	return fallback
+}

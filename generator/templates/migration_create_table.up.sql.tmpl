@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS {{.Name | toPlural | toSnake}} (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+{{- range .Params}}
+    {{. | toColumnName}} {{. | toSQLType}} NOT NULL DEFAULT {{. | toSQLDefault}},
+{{- end}}
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP
+);

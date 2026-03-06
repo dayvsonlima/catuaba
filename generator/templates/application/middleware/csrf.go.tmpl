@@ -1,0 +1,73 @@
+package middleware
+
+import (
+	"crypto/rand"
+	"encoding/hex"
+	"net/http"
+	"strings"
+
+	"github.com/gin-gonic/gin"
+)
+
+const csrfTokenKey = "_csrf_token"
+
+// CSRF provides Cross-Site Request Forgery protection.
+// It generates a token and validates it on POST/PUT/DELETE requests.
+// API routes (/api/) are skipped — they use their own auth mechanisms.
+func CSRF() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		// Skip API routes — they don't use browser cookies for auth
+		if strings.HasPrefix(ctx.Request.URL.Path, "/api/") {
+			ctx.Next()
+			return
+		}
+
+		// Skip safe methods
+		if ctx.Request.Method == "GET" || ctx.Request.Method == "HEAD" || ctx.Request.Method == "OPTIONS" {
+			ensureToken(ctx)
+			ctx.Next()
+			return
+		}
+
+		// Validate token on state-changing methods
+		cookieToken, err := ctx.Cookie(csrfTokenKey)
+		if err != nil || cookieToken == "" {
+			ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "CSRF token missing"})
+			return
+		}
+
+		formToken := ctx.PostForm("_csrf_token")
+		if formToken == "" {
+			formToken = ctx.GetHeader("X-CSRF-Token")
+		}
+
+		if formToken != cookieToken {
+			ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "CSRF token invalid"})
+			return
+		}
+
+		ctx.Next()
+	}
+}
+
+// CSRFToken returns the current CSRF token for the request.
+func CSRFToken(ctx *gin.Context) string {
+	token := ensureToken(ctx)
+	return token
+}
+
+func ensureToken(ctx *gin.Context) string {
+	token, err := ctx.Cookie(csrfTokenKey)
+	if err != nil || token == "" {
+		token = generateToken()
+		// httpOnly=false so JavaScript (HTMX) can read and send the token
+		ctx.SetCookie(csrfTokenKey, token, 3600, "/", "", false, false)
+	}
+	return token
+}
+
+func generateToken() string {
+	b := make([]byte, 32)
+	rand.Read(b)
+	return hex.EncodeToString(b)
+}

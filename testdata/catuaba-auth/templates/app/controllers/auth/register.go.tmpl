@@ -1,0 +1,63 @@
+package auth
+
+import (
+	"net/http"
+
+	"{{.ModuleName}}/app/models"
+	"{{.ModuleName}}/config"
+	"{{.ModuleName}}/database"
+
+	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
+)
+
+type RegisterParams struct {
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=6"`
+}
+
+// Register handles POST /auth/register
+func Register(ctx *gin.Context) {
+	var params RegisterParams
+	if err := ctx.ShouldBindJSON(&params); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Check if email is already taken
+	var existing models.User
+	if err := database.DB.Where("email = ?", params.Email).First(&existing).Error; err == nil {
+		ctx.JSON(http.StatusConflict, gin.H{"error": "email already registered"})
+		return
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(params.Password), bcrypt.DefaultCost)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to hash password"})
+		return
+	}
+
+	user := &models.User{
+		Email:        params.Email,
+		PasswordHash: string(hash),
+	}
+
+	if err := database.DB.Create(user).Error; err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	token, err := config.GenerateToken(user.ID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token"})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, gin.H{
+		"token": token,
+		"user": gin.H{
+			"id":    user.ID,
+			"email": user.Email,
+		},
+	})
+}

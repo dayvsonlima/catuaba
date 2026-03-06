@@ -1,0 +1,58 @@
+.PHONY: run build test lint clean docker-up docker-down dev templ-watch css-watch air-watch
+
+APP_NAME={{.Name}}
+
+## dev: Start development (templ + tailwind + air)
+dev:
+	@make -j3 templ-watch css-watch air-watch
+
+## templ-watch: Watch and regenerate templ files
+templ-watch:
+	@templ generate --watch
+
+## css-watch: Watch and rebuild Tailwind CSS
+css-watch:
+	@npx @tailwindcss/cli -i static/css/input.css -o static/css/app.css --watch
+
+## air-watch: Start air for hot reload
+air-watch:
+	@air
+
+## run: Start the application with hot reload (requires air)
+run:
+	@air
+
+## build: Build the application binary
+build:
+	@templ generate
+	@npx @tailwindcss/cli -i static/css/input.css -o static/css/app.css --minify
+	@go build -ldflags="-w -s" -o ./bin/$(APP_NAME) .
+
+## test: Run all tests
+test:
+	@go test ./... -v
+
+## lint: Run linter (requires golangci-lint)
+lint:
+	@golangci-lint run ./...
+
+## clean: Remove build artifacts
+clean:
+	@rm -rf ./bin ./tmp
+
+## docker-up: Start all services with Docker Compose
+docker-up:
+	@docker compose up -d --build
+
+## docker-down: Stop all Docker Compose services
+docker-down:
+	@docker compose down
+
+## tidy: Run go mod tidy
+tidy:
+	@go mod tidy
+
+## help: Show this help
+help:
+	@echo "Available targets:"
+	@grep -E '^## ' Makefile | sed 's/## /  /'

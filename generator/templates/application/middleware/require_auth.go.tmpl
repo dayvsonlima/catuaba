@@ -1,0 +1,20 @@
+package middleware
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+// RequireAuth redirects unauthenticated users to /login.
+func RequireAuth() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if GetSessionUserID(c) == 0 {
+			SetFlash(c, "error", "Please log in to continue")
+			c.Redirect(http.StatusFound, "/login")
+			c.Abort()
+			return
+		}
+		c.Next()
+	}
+}

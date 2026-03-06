@@ -1,0 +1,29 @@
+package middleware
+
+import (
+	"crypto/rand"
+	"fmt"
+
+	"github.com/gin-gonic/gin"
+)
+
+// RequestID returns a middleware that adds a unique X-Request-ID header to each request
+func RequestID() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		requestID := ctx.GetHeader("X-Request-ID")
+		if requestID == "" {
+			requestID = generateID()
+		}
+
+		ctx.Set("request_id", requestID)
+		ctx.Header("X-Request-ID", requestID)
+
+		ctx.Next()
+	}
+}
+
+func generateID() string {
+	b := make([]byte, 16)
+	rand.Read(b)
+	return fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:])
+}

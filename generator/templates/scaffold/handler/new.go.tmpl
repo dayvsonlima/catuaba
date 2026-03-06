@@ -1,0 +1,17 @@
+package {{.Name|toPlural|toSnake}}
+
+import (
+	"{{moduleName}}/app/models"
+	views "{{moduleName}}/app/views/{{.Name|toPlural|toSnake}}"
+	"{{moduleName}}/middleware"
+
+	"github.com/gin-gonic/gin"
+)
+
+// New handles GET /{{.Name|toPlural|toSnake}}/new
+func New(ctx *gin.Context) {
+	flashMsg, flashType := middleware.GetFlash(ctx)
+
+	ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+	views.Form(models.{{.Name|toModelName}}{}, false, nil, flashMsg, flashType).Render(ctx.Request.Context(), ctx.Writer)
+}

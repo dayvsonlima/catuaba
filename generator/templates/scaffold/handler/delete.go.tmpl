@@ -1,0 +1,30 @@
+package {{.Name|toPlural|toSnake}}
+
+import (
+	"net/http"
+
+	"{{moduleName}}/app/models"
+	"{{moduleName}}/database"
+	"{{moduleName}}/middleware"
+
+	"github.com/gin-gonic/gin"
+)
+
+// Delete handles POST /{{.Name|toPlural|toSnake}}/:id/delete
+func Delete(ctx *gin.Context) {
+	var {{.Name|toVarName}} models.{{.Name|toModelName}}
+
+	if err := database.DB.First(&{{.Name|toVarName}}, ctx.Param("id")).Error; err != nil {
+		ctx.String(http.StatusNotFound, "Record not found")
+		return
+	}
+
+	if err := database.DB.Delete(&{{.Name|toVarName}}).Error; err != nil {
+		middleware.SetFlash(ctx, "error", "Failed to delete {{.Name}}: "+err.Error())
+		ctx.Redirect(http.StatusSeeOther, "/{{.Name|toPlural|toSnake}}")
+		return
+	}
+
+	middleware.SetFlash(ctx, "success", "{{.Name}} deleted successfully!")
+	ctx.Redirect(http.StatusSeeOther, "/{{.Name|toPlural|toSnake}}")
+}

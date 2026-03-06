@@ -1,0 +1,23 @@
+package components
+{{if .Auth}}
+import "{{.Name}}/middleware"
+{{end}}
+templ Nav(appName string) {
+	<nav class="bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8">
+		<div class="mx-auto max-w-7xl flex h-16 items-center justify-between">
+			<a href="/" class="text-xl font-bold text-indigo-600">{ appName }</a>
+			<div class="flex items-center gap-4">
+				<a href="/" class="text-sm text-gray-600 hover:text-gray-900">Home</a>
+{{if .Auth}}				if middleware.SessionManager.GetString(ctx, "userName") != "" {
+					<span class="text-sm text-gray-700">{ middleware.SessionManager.GetString(ctx, "userName") }</span>
+					<form method="POST" action="/logout" class="inline">
+						<button type="submit" class="text-sm text-gray-600 hover:text-gray-900">Sign out</button>
+					</form>
+				} else {
+					<a href="/login" class="text-sm text-gray-600 hover:text-gray-900">Sign in</a>
+					<a href="/register" class="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500">Sign up</a>
+				}
+{{end}}			</div>
+		</div>
+	</nav>
+}

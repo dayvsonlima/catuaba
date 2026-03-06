@@ -1,0 +1,13 @@
+package services
+
+import "gorm.io/gorm"
+
+// {{.Name | camelize}}Service handles business logic for {{.Name | toSnake}}
+type {{.Name | camelize}}Service struct {
+	db *gorm.DB
+}
+
+// New{{.Name | camelize}}Service creates a new {{.Name | camelize}}Service
+func New{{.Name | camelize}}Service(db *gorm.DB) *{{.Name | camelize}}Service {
+	return &{{.Name | camelize}}Service{db: db}
+}

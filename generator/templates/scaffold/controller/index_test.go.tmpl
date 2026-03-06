@@ -1,0 +1,35 @@
+package {{.Name|toPlural|toSnake}}_test
+
+import (
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
+
+	"{{moduleName}}/app/controllers/{{.Name|toPlural|toSnake}}"
+)
+
+func TestIndex(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	t.Run("returns 200 OK", func(t *testing.T) {
+		router := gin.New()
+		router.GET("/{{.Name|toPlural|toSnake}}", {{.Name|toPlural|toSnake}}.Index)
+
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest("GET", "/{{.Name|toPlural|toSnake}}", nil)
+		router.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+
+		var response map[string]interface{}
+		err := json.Unmarshal(w.Body.Bytes(), &response)
+		assert.NoError(t, err)
+		assert.Contains(t, response, "data")
+		assert.Contains(t, response, "page")
+		assert.Contains(t, response, "total")
+	})
+}

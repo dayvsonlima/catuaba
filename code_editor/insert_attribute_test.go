@@ -9,15 +9,11 @@ import (
 
 func TestInsertAttribute(t *testing.T) {
 
-	var (
-		methodName   = "AutoMigrate"
-		newAttribute = "&models.User{}"
-	)
-
-	t.Run("when the method has some param", func(t *testing.T) {
+	t.Run("when the method has some param (AutoMigrate)", func(t *testing.T) {
 		var (
-			code = `
-			// Migrations .
+			methodName     = "AutoMigrate"
+			newAttribute   = "&models.User{}"
+			code           = `
 			func Migrations() {
 				Connection.AutoMigrate(&models.Post{})
 			}
@@ -29,15 +25,15 @@ func TestInsertAttribute(t *testing.T) {
 		assert.Contains(t, output, expectedOutput)
 	})
 
-	t.Run("when the method has no params", func(t *testing.T) {
+	t.Run("when the method has no params (AutoMigrate)", func(t *testing.T) {
 		var (
-			code = `
-				// Migrations .
+			methodName     = "AutoMigrate"
+			newAttribute   = "&models.User{}"
+			code           = `
 				func Migrations() {
 					Connection.AutoMigrate( )
 				}
 			`
-
 			expectedOutput = "Connection.AutoMigrate(&models.User{})"
 		)
 
@@ -45,10 +41,11 @@ func TestInsertAttribute(t *testing.T) {
 		assert.Contains(t, output, expectedOutput)
 	})
 
-	t.Run("when the method has break lines", func(t *testing.T) {
+	t.Run("when the method has break lines (AutoMigrate)", func(t *testing.T) {
 		var (
-			code = `
-				// Migrations .
+			methodName     = "AutoMigrate"
+			newAttribute   = "&models.User{}"
+			code           = `
 				func Migrations() {
 					Connection.AutoMigrate(
 						&models.Parms{},
@@ -56,8 +53,39 @@ func TestInsertAttribute(t *testing.T) {
 					)
 				}
 			`
-
 			expectedOutput = "&models.User{}"
+		)
+
+		output := code_editor.InsertAttribute(code, methodName, newAttribute)
+		assert.Contains(t, output, expectedOutput)
+	})
+
+	t.Run("works with Migrate method (GORM v2)", func(t *testing.T) {
+		var (
+			methodName     = "Migrate"
+			newAttribute   = "&models.User{}"
+			code           = `
+			func init() {
+				database.Migrate(&models.Post{})
+			}
+			`
+			expectedOutput = "database.Migrate(&models.Post{}, &models.User{})"
+		)
+
+		output := code_editor.InsertAttribute(code, methodName, newAttribute)
+		assert.Contains(t, output, expectedOutput)
+	})
+
+	t.Run("works with empty Migrate (GORM v2)", func(t *testing.T) {
+		var (
+			methodName     = "Migrate"
+			newAttribute   = "&models.User{}"
+			code           = `
+			func init() {
+				database.Migrate( )
+			}
+			`
+			expectedOutput = "database.Migrate(&models.User{})"
 		)
 
 		output := code_editor.InsertAttribute(code, methodName, newAttribute)

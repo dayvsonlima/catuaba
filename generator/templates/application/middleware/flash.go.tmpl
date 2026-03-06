@@ -1,0 +1,35 @@
+package middleware
+
+import (
+	"github.com/gin-gonic/gin"
+)
+
+const (
+	flashMsgKey  = "_flash_msg"
+	flashTypeKey = "_flash_type"
+)
+
+// SetFlash stores a flash message in the cookie for the next request.
+func SetFlash(ctx *gin.Context, flashType string, message string) {
+	ctx.SetCookie(flashMsgKey, message, 5, "/", "", false, true)
+	ctx.SetCookie(flashTypeKey, flashType, 5, "/", "", false, true)
+}
+
+// GetFlash reads and clears the flash message from cookies.
+func GetFlash(ctx *gin.Context) (string, string) {
+	msg, err := ctx.Cookie(flashMsgKey)
+	if err != nil || msg == "" {
+		return "", ""
+	}
+
+	flashType, _ := ctx.Cookie(flashTypeKey)
+	if flashType == "" {
+		flashType = "success"
+	}
+
+	// Clear the cookies
+	ctx.SetCookie(flashMsgKey, "", -1, "/", "", false, true)
+	ctx.SetCookie(flashTypeKey, "", -1, "/", "", false, true)
+
+	return msg, flashType
+}

@@ -1,0 +1,35 @@
+package components
+
+import "fmt"
+
+templ Pagination(currentPage int, totalPages int, baseURL string) {
+	if totalPages > 1 {
+		<nav class="mt-6 flex items-center justify-center gap-2" aria-label="Pagination">
+			if currentPage > 1 {
+				<a
+					href={ templ.SafeURL(fmt.Sprintf("%s?page=%d", baseURL, currentPage-1)) }
+					hx-get={ fmt.Sprintf("%s?page=%d", baseURL, currentPage-1) }
+					hx-target="#content"
+					hx-push-url="true"
+					class="rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+				>
+					Previous
+				</a>
+			}
+			<span class="text-sm text-gray-600">
+				Page { fmt.Sprintf("%d", currentPage) } of { fmt.Sprintf("%d", totalPages) }
+			</span>
+			if currentPage < totalPages {
+				<a
+					href={ templ.SafeURL(fmt.Sprintf("%s?page=%d", baseURL, currentPage+1)) }
+					hx-get={ fmt.Sprintf("%s?page=%d", baseURL, currentPage+1) }
+					hx-target="#content"
+					hx-push-url="true"
+					class="rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+				>
+					Next
+				</a>
+			}
+		</nav>
+	}
+}

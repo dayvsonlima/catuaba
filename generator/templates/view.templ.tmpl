@@ -1,0 +1,12 @@
+package pages
+
+import "{{moduleName}}/app/views/layouts"
+
+templ {{.Name}}() {
+	@layouts.Base("{{.Name}}", "", "", "") {
+		<div class="mx-auto max-w-4xl py-12 px-4 sm:px-6 lg:px-8">
+			<h1 class="text-3xl font-bold text-gray-900">{{.Name}}</h1>
+			<p class="mt-4 text-gray-600">This is the {{.Name}} page.</p>
+		</div>
+	}
+}

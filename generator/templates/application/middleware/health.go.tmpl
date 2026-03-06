@@ -1,0 +1,21 @@
+package middleware
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+// Health registers a /health endpoint that returns service status
+func Health() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if c.Request.URL.Path == "/health" {
+			c.JSON(http.StatusOK, gin.H{
+				"status": "ok",
+			})
+			c.Abort()
+			return
+		}
+		c.Next()
+	}
+}

@@ -1,10 +1,10 @@
 package models
 
-import "github.com/jinzhu/gorm"
+import "gorm.io/gorm"
 
 // {{.Name | toModelName}} model
 type {{.Name | toModelName}} struct {
-	gorm.Model 
+	gorm.Model
 	{{ range .Params}}{{. | toAttrName}} {{. | toType}} {{. | toJson}}
 	{{ end }}
 }

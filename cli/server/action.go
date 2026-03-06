@@ -1,35 +1,38 @@
 package server
 
 import (
-	"log"
 	"os"
+	"os/exec"
 	"os/signal"
 	"syscall"
 
-	"github.com/cosmtrek/air/runner"
+	"github.com/dayvsonlima/catuaba/cli/output"
 	"github.com/urfave/cli/v2"
 )
 
 func Action(c *cli.Context) error {
+	output.Info("Starting development server...")
+
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
-	r, err := runner.NewEngine("", false)
-	if err != nil {
-		log.Fatal(err)
-		return nil
-	}
+	cmd := exec.Command("air")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+
 	go func() {
 		<-sigs
-		r.Stop()
-	}()
-
-	defer func() {
-		if e := recover(); e != nil {
-			log.Fatalf("PANIC: %+v", e)
+		if cmd.Process != nil {
+			cmd.Process.Kill()
 		}
 	}()
 
-	r.Run()
+	if err := cmd.Run(); err != nil {
+		output.Error("Error running air: %v", err)
+		output.Info("Make sure 'air' is installed: go install github.com/air-verse/air@latest")
+		return err
+	}
+
 	return nil
 }

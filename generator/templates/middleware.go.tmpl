@@ -1,0 +1,12 @@
+package middleware
+
+import "github.com/gin-gonic/gin"
+
+// {{.Name | camelize}} returns a middleware handler
+func {{.Name | camelize}}() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		// TODO: implement {{.Name | toSnake}} middleware logic
+
+		ctx.Next()
+	}
+}

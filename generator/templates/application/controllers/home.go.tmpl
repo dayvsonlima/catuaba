@@ -1,0 +1,13 @@
+package controllers
+
+import (
+	"{{.Name}}/app/views/pages"
+
+	"github.com/gin-gonic/gin"
+)
+
+func Home(ctx *gin.Context) {
+	component := pages.Home()
+	ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+	component.Render(ctx.Request.Context(), ctx.Writer)
+}

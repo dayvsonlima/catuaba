@@ -1,0 +1,60 @@
+package {{.Name|toPlural|toSnake}}
+
+import (
+	"fmt"
+	"{{moduleName}}/app/models"
+	"{{moduleName}}/app/views/layouts"
+	"{{moduleName}}/app/views/components"
+)
+
+templ Index(items []models.{{.Name|toModelName}}, page int, totalPages int, flashMsg string, flashType string) {
+	@layouts.Base("{{.Name|toPlural}}", "", flashMsg, flashType) {
+		<div class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8" id="content">
+			<div class="flex items-center justify-between mb-6">
+				<h1 class="text-2xl font-bold text-gray-900">{{.Name|toPlural}}</h1>
+				<a href="/{{.Name|toPlural|toSnake}}/new" class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">
+					New {{.Name}}
+				</a>
+			</div>
+			if len(items) == 0 {
+				<div class="text-center py-12">
+					<p class="text-gray-500">No {{.Name|toPlural|toSnake}} found.</p>
+					<a href="/{{.Name|toPlural|toSnake}}/new" class="mt-4 inline-block text-indigo-600 hover:underline">Create the first one</a>
+				</div>
+			} else {
+				<div class="overflow-hidden rounded-lg border border-gray-200 shadow-sm">
+					<table class="min-w-full divide-y divide-gray-200">
+						<thead class="bg-gray-50">
+							<tr>
+								<th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">ID</th>
+								{{ range .Params}}<th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">{{. | toFormLabel}}</th>
+								{{ end }}<th class="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">Actions</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-gray-200 bg-white">
+							for _, item := range items {
+								<tr class="hover:bg-gray-50">
+									<td class="whitespace-nowrap px-4 py-3 text-sm text-gray-900">{ fmt.Sprintf("%d", item.ID) }</td>
+									{{ range .Params}}{{ if eq (. | toFormInput) "textarea" }}<td class="px-4 py-3 text-sm text-gray-600 max-w-xs truncate" title={ fmt.Sprintf("%v", item.{{. | toAttrName}}) }>{ fmt.Sprintf("%v", item.{{. | toAttrName}}) }</td>
+									{{ else if eq (. | toFormInput) "checkbox" }}<td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">
+										if item.{{. | toAttrName}} {
+											<span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">Yes</span>
+										} else {
+											<span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">No</span>
+										}
+									</td>
+									{{ else }}<td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{ fmt.Sprintf("%v", item.{{. | toAttrName}}) }</td>
+									{{ end }}{{ end }}<td class="whitespace-nowrap px-4 py-3 text-right text-sm">
+										<a href={ templ.SafeURL(fmt.Sprintf("/{{$.Name|toPlural|toSnake}}/%d", item.ID)) } class="text-indigo-600 hover:underline mr-3">View</a>
+										<a href={ templ.SafeURL(fmt.Sprintf("/{{$.Name|toPlural|toSnake}}/%d/edit", item.ID)) } class="text-indigo-600 hover:underline">Edit</a>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+				@components.Pagination(page, totalPages, "/{{.Name|toPlural|toSnake}}")
+			}
+		</div>
+	}
+}

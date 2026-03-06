@@ -1,0 +1,51 @@
+package middleware
+
+import (
+	"net/http"
+	"strings"
+
+	"{{.ModuleName}}/config"
+	"{{.ModuleName}}/database"
+	"{{.ModuleName}}/app/models"
+
+	"github.com/gin-gonic/gin"
+)
+
+// RequireAuth returns a middleware that validates the JWT token from the
+// Authorization header and sets the current user in the context.
+func RequireAuth() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		header := ctx.GetHeader("Authorization")
+		if header == "" {
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "missing authorization header"})
+			return
+		}
+
+		tokenString := strings.TrimPrefix(header, "Bearer ")
+		if tokenString == header {
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid authorization format"})
+			return
+		}
+
+		claims, err := config.ValidateToken(tokenString)
+		if err != nil {
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid or expired token"})
+			return
+		}
+
+		userID, ok := claims["user_id"].(float64)
+		if !ok {
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid token claims"})
+			return
+		}
+
+		var user models.User
+		if err := database.DB.First(&user, uint(userID)).Error; err != nil {
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "user not found"})
+			return
+		}
+
+		ctx.Set("currentUser", &user)
+		ctx.Next()
+	}
+}

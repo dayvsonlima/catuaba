@@ -1,0 +1,66 @@
+name: auth
+version: "1.0.0"
+description: "JWT authentication with registration and login"
+author: "dayvsonlima"
+repository: "github.com/dayvsonlima/catuaba-auth"
+
+variables:
+  - name: jwt_secret_env
+    default: "JWT_SECRET"
+  - name: token_expiry
+    default: "24h"
+
+dependencies:
+  - "github.com/golang-jwt/jwt/v5@v5.2.1"
+  - "golang.org/x/crypto@v0.31.0"
+
+directories:
+  - "app/controllers/auth"
+  - "config"
+
+files:
+  - template: "config/jwt.go.tmpl"
+    output: "config/jwt.go"
+  - template: "app/models/user.go.tmpl"
+    output: "app/models/user.go"
+  - template: "middleware/auth.go.tmpl"
+    output: "middleware/auth.go"
+  - template: "app/controllers/auth/register.go.tmpl"
+    output: "app/controllers/auth/register.go"
+  - template: "app/controllers/auth/login.go.tmpl"
+    output: "app/controllers/auth/login.go"
+  - template: "app/controllers/auth/me.go.tmpl"
+    output: "app/controllers/auth/me.go"
+
+injections:
+  - file: "database/connection.go"
+    action: "add_import"
+    import: "{{.ModuleName}}/app/models"
+  - file: "database/connection.go"
+    action: "insert_attribute"
+    method: "AutoMigrate"
+    attribute: "&models.User{}"
+  - file: "config/routes.go"
+    action: "add_import"
+    import: "{{.ModuleName}}/app/controllers/auth"
+  - file: "config/routes.go"
+    action: "add_import"
+    import: "{{.ModuleName}}/middleware"
+  - file: "config/routes.go"
+    action: "insert_before_closing_brace"
+    content: |2
+      	// Auth routes
+      	routes.POST("/auth/register", auth.Register)
+      	routes.POST("/auth/login", auth.Login)
+      	routes.GET("/auth/me", middleware.RequireAuth(), auth.Me)
+
+env_vars:
+  - name: "JWT_SECRET"
+    value: "change-me-in-production"
+  - name: "JWT_EXPIRY"
+    value: "24h"
+
+post_install:
+  - "Run 'go mod tidy' to install dependencies"
+  - "Update JWT_SECRET in .env with a secure value"
+  - "Endpoints created: POST /auth/register, POST /auth/login, GET /auth/me"

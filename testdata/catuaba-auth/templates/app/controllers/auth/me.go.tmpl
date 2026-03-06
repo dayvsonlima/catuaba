@@ -1,0 +1,24 @@
+package auth
+
+import (
+	"net/http"
+
+	"{{.ModuleName}}/app/models"
+
+	"github.com/gin-gonic/gin"
+)
+
+// Me handles GET /auth/me — returns the current authenticated user.
+func Me(ctx *gin.Context) {
+	user, exists := ctx.Get("currentUser")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "not authenticated"})
+		return
+	}
+
+	u := user.(*models.User)
+	ctx.JSON(http.StatusOK, gin.H{
+		"id":    u.ID,
+		"email": u.Email,
+	})
+}

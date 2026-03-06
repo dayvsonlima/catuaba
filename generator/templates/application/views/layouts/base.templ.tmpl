@@ -1,0 +1,35 @@
+package layouts
+
+import "{{.Name}}/app/views/components"
+
+templ Base(title string, appName string, flashMsg string, flashType string) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>{ title } - { appName }</title>
+			<link rel="stylesheet" href="/static/css/app.css"/>
+			<script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+			<script defer src="https://unpkg.com/alpinejs@3.14.8/dist/cdn.min.js"></script>
+			<script>
+				document.addEventListener('htmx:configRequest', function(event) {
+					var match = document.cookie.match(/(?:^| )_csrf_token=([^;]+)/);
+					if (match) event.detail.headers['X-CSRF-Token'] = match[1];
+				});
+			</script>
+		</head>
+		<body class="min-h-screen bg-gray-50 text-gray-900 flex flex-col" hx-boost="true">
+			@components.Nav(appName)
+			if flashMsg != "" {
+				@components.Flash(flashMsg, flashType)
+			}
+			<main class="flex-1">
+				{ children... }
+			</main>
+			<footer class="border-t border-gray-200 py-6 text-center text-sm text-gray-500">
+				<p>Built with <a href="https://github.com/dayvsonlima/catuaba" class="text-indigo-600 hover:underline">Catuaba</a></p>
+			</footer>
+		</body>
+	</html>
+}

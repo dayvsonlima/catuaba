@@ -1,0 +1,33 @@
+package components
+
+templ Flash(message string, flashType string) {
+	<div
+		x-data="{ show: true }"
+		x-show="show"
+		x-init="setTimeout(() => show = false, 5000)"
+		x-transition:leave="transition ease-in duration-200"
+		x-transition:leave-start="opacity-100"
+		x-transition:leave-end="opacity-0"
+		class={ "mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-4", flashClass(flashType) }
+	>
+		<div class="flex items-center justify-between rounded-lg px-4 py-3">
+			<p class="text-sm font-medium">{ message }</p>
+			<button @click="show = false" class="ml-4 text-current opacity-70 hover:opacity-100">
+				&times;
+			</button>
+		</div>
+	</div>
+}
+
+func flashClass(flashType string) string {
+	switch flashType {
+	case "success":
+		return "bg-green-50 text-green-800 border border-green-200"
+	case "error":
+		return "bg-red-50 text-red-800 border border-red-200"
+	case "warning":
+		return "bg-yellow-50 text-yellow-800 border border-yellow-200"
+	default:
+		return "bg-blue-50 text-blue-800 border border-blue-200"
+	}
+}

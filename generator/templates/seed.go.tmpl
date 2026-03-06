@@ -1,0 +1,24 @@
+package seeds
+
+import (
+	"log"
+
+	"gorm.io/gorm"
+)
+
+// {{.Name | camelize}}Seed populates the database with {{.Name | toSnake}} data
+func {{.Name | camelize}}Seed(db *gorm.DB) {
+	log.Println("Running {{.Name | toSnake}} seed...")
+
+	// TODO: implement seed logic
+	// Example:
+	// records := []models.{{.Name | camelize}}{
+	//     {Field: "value1"},
+	//     {Field: "value2"},
+	// }
+	// for _, record := range records {
+	//     db.Create(&record)
+	// }
+
+	log.Println("{{.Name | camelize}} seed completed")
+}

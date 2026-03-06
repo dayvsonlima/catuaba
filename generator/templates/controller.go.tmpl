@@ -1,10 +1,6 @@
 package {{.Name | toSnake }}
 
-import (
-	"net/http"
+import "github.com/gin-gonic/gin"
 
-	"github.com/gin-gonic/gin"
-)
-
-// {{.MethodName | camelize}} .
+// TODO: implement {{.MethodName | camelize}} handler
 func {{.MethodName | camelize }}(ctx *gin.Context) { }

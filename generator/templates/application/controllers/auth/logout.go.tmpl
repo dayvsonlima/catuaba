@@ -1,0 +1,16 @@
+package auth
+
+import (
+	"net/http"
+
+	"{{.Name}}/middleware"
+
+	"github.com/gin-gonic/gin"
+)
+
+// Logout clears the session and redirects to home.
+func Logout(ctx *gin.Context) {
+	middleware.ClearSession(ctx)
+	middleware.SetFlash(ctx, "success", "You have been logged out")
+	ctx.Redirect(http.StatusFound, "/")
+}

@@ -1,0 +1,9 @@
+
+	// {{.Name}} routes
+	routes.GET("/{{.Name|toPlural|toSnake}}", {{.Name|toPlural|toSnake}}.Index)
+	routes.GET("/{{.Name|toPlural|toSnake}}/new", {{.Name|toPlural|toSnake}}.New)
+	routes.POST("/{{.Name|toPlural|toSnake}}", {{.Name|toPlural|toSnake}}.Create)
+	routes.GET("/{{.Name|toPlural|toSnake}}/:id", {{.Name|toPlural|toSnake}}.Show)
+	routes.GET("/{{.Name|toPlural|toSnake}}/:id/edit", {{.Name|toPlural|toSnake}}.Edit)
+	routes.POST("/{{.Name|toPlural|toSnake}}/:id", {{.Name|toPlural|toSnake}}.Update)
+	routes.POST("/{{.Name|toPlural|toSnake}}/:id/delete", {{.Name|toPlural|toSnake}}.Delete)

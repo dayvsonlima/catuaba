@@ -1,23 +1,24 @@
 package {{.Name|toPlural|toSnake}}
 
 import (
+	"{{moduleName}}/app/models"
+	"{{moduleName}}/database"
 	"net/http"
-
-	"application/app/models"
 
 	"github.com/gin-gonic/gin"
 )
 
 type UpdateParams struct {
-	{{ range .Params}}{{. | toAttrName}} {{. | toType}} {{. | toJson}}
+	{{ range .Params}}{{. | toAttrName}} {{. | toType}} {{. | toJsonBinding}}
 	{{ end }}
 }
 
-// Update .
+// Update handles PUT/PATCH /{{.Name|toPlural|toSnake}}/:id
 func Update(ctx *gin.Context) {
 	var {{.Name|toVarName}} models.{{.Name|toModelName}}
-	if err := db.Where("id = ?", ctx.Param("id")).First(&{{.Name|toVarName}}).Error; err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+
+	if err := database.DB.First(&{{.Name|toVarName}}, ctx.Param("id")).Error; err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "Record not found"})
 		return
 	}
 
@@ -27,7 +28,14 @@ func Update(ctx *gin.Context) {
 		return
 	}
 
-	db.Model(&{{.Name|toVarName}}).Updates(params)
+	{{ range .Params}}{{$.Name|toVarName}}.{{. | toAttrName}} = params.{{. | toAttrName}}
+	{{ end }}
+	if err := database.DB.Save(&{{.Name|toVarName}}).Error; err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	database.DB.First(&{{.Name|toVarName}}, {{.Name|toVarName}}.ID)
 
 	ctx.JSON(http.StatusOK, {{.Name|toVarName}})
 }

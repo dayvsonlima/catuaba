@@ -1,0 +1,55 @@
+package auth
+
+import "{{.Name}}/app/views/layouts"
+
+templ Login(email string, errMsg string, flashMsg string, flashType string) {
+	@layouts.Base("Sign in", "", flashMsg, flashType) {
+		<div class="flex min-h-[60vh] items-center justify-center py-12">
+			<div class="w-full max-w-md space-y-8">
+				<div class="text-center">
+					<h2 class="text-3xl font-bold text-gray-900">Sign in</h2>
+					<p class="mt-2 text-sm text-gray-600">
+						Don't have an account?
+						<a href="/register" class="text-indigo-600 hover:underline">Create one</a>
+					</p>
+				</div>
+				if errMsg != "" {
+					<div class="rounded-md bg-red-50 border border-red-200 p-4 text-sm text-red-700">
+						{ errMsg }
+					</div>
+				}
+				<form method="POST" action="/login" class="space-y-6">
+					<div>
+						<label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+						<input
+							type="email"
+							id="email"
+							name="email"
+							value={ email }
+							required
+							autocomplete="email"
+							class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+						/>
+					</div>
+					<div>
+						<label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+						<input
+							type="password"
+							id="password"
+							name="password"
+							required
+							autocomplete="current-password"
+							class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+						/>
+					</div>
+					<button
+						type="submit"
+						class="w-full rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+					>
+						Sign in
+					</button>
+				</form>
+			</div>
+		</div>
+	}
+}

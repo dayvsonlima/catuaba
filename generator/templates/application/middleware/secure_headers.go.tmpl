@@ -1,0 +1,27 @@
+package middleware
+
+import "github.com/gin-gonic/gin"
+
+// SecureHeaders sets security-related HTTP headers on every response.
+func SecureHeaders() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		h := c.Writer.Header()
+
+		// Prevent MIME-type sniffing
+		h.Set("X-Content-Type-Options", "nosniff")
+
+		// Prevent clickjacking
+		h.Set("X-Frame-Options", "DENY")
+
+		// Enable XSS filter in older browsers
+		h.Set("X-XSS-Protection", "1; mode=block")
+
+		// Control referrer information
+		h.Set("Referrer-Policy", "strict-origin-when-cross-origin")
+
+		// Prevent content from being loaded in other sites' iframes
+		h.Set("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+
+		c.Next()
+	}
+}

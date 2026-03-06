@@ -1,21 +1,26 @@
 package {{.Name|toPlural|toSnake}}
 
 import (
-	"application/app/models"
+	"{{moduleName}}/app/models"
+	"{{moduleName}}/database"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-// Delete .
+// Delete handles DELETE /{{.Name|toPlural|toSnake}}/:id
 func Delete(ctx *gin.Context) {
 	var {{.Name|toVarName}} models.{{.Name|toModelName}}
-	if err := db.Where("id = ?", ctx.Param("id")).First(&{{.Name|toVarName}}).Error; err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+
+	if err := database.DB.First(&{{.Name|toVarName}}, ctx.Param("id")).Error; err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "Record not found"})
 		return
 	}
 
-	db.Delete(&{{.Name|toVarName}})
+	if err := database.DB.Delete(&{{.Name|toVarName}}).Error; err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
-	ctx.JSON(http.StatusOK, gin.H{"data": true})
+	ctx.Status(http.StatusNoContent)
 }

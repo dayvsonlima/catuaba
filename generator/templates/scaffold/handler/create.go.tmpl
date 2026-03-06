@@ -1,0 +1,41 @@
+package {{.Name|toPlural|toSnake}}
+
+import (
+	"net/http"
+
+	"{{moduleName}}/app/models"
+	views "{{moduleName}}/app/views/{{.Name|toPlural|toSnake}}"
+	"{{moduleName}}/database"
+	"{{moduleName}}/middleware"
+
+	"github.com/gin-gonic/gin"
+)
+
+type CreateParams struct {
+	{{ range .Params}}{{. | toAttrName}} {{. | toType}} {{. | toFormBinding}}
+	{{ end }}
+}
+
+// Create handles POST /{{.Name|toPlural|toSnake}}
+func Create(ctx *gin.Context) {
+	var params CreateParams
+	if err := ctx.ShouldBind(&params); err != nil {
+		ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+		views.Form(models.{{.Name|toModelName}}{}, false, map[string]string{"base": err.Error()}, "", "").Render(ctx.Request.Context(), ctx.Writer)
+		return
+	}
+
+	{{.Name|toVarName}} := models.{{.Name|toModelName}}{
+		{{ range .Params}}{{. | toAttrName}}: params.{{. | toAttrName}},
+		{{ end }}
+	}
+
+	if err := database.DB.Create(&{{.Name|toVarName}}).Error; err != nil {
+		ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+		views.Form({{.Name|toVarName}}, false, map[string]string{"base": err.Error()}, "", "").Render(ctx.Request.Context(), ctx.Writer)
+		return
+	}
+
+	middleware.SetFlash(ctx, "success", "{{.Name}} created successfully!")
+	ctx.Redirect(http.StatusSeeOther, "/{{.Name|toPlural|toSnake}}")
+}

@@ -1,0 +1,69 @@
+package auth
+
+import (
+	"net/http"
+
+	"{{.Name}}/app/models"
+	views "{{.Name}}/app/views/auth"
+	"{{.Name}}/database"
+	"{{.Name}}/middleware"
+
+	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
+)
+
+// RegisterForm renders the registration page.
+func RegisterForm(ctx *gin.Context) {
+	flashMsg, flashType := middleware.GetFlash(ctx)
+	ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+	views.Register("", "", "", flashMsg, flashType).Render(ctx.Request.Context(), ctx.Writer)
+}
+
+// RegisterSubmit processes the registration form.
+func RegisterSubmit(ctx *gin.Context) {
+	name := ctx.PostForm("name")
+	email := ctx.PostForm("email")
+	password := ctx.PostForm("password")
+	passwordConfirm := ctx.PostForm("password_confirm")
+
+	if name == "" || email == "" || password == "" {
+		ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+		views.Register(name, email, "All fields are required", "", "").Render(ctx.Request.Context(), ctx.Writer)
+		return
+	}
+
+	if len(password) < 8 {
+		ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+		views.Register(name, email, "Password must be at least 8 characters", "", "").Render(ctx.Request.Context(), ctx.Writer)
+		return
+	}
+
+	if password != passwordConfirm {
+		ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+		views.Register(name, email, "Passwords do not match", "", "").Render(ctx.Request.Context(), ctx.Writer)
+		return
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+		views.Register(name, email, "An error occurred", "", "").Render(ctx.Request.Context(), ctx.Writer)
+		return
+	}
+
+	user := models.User{
+		Name:         name,
+		Email:        email,
+		PasswordHash: string(hash),
+	}
+
+	if err := database.DB.Create(&user).Error; err != nil {
+		ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+		views.Register(name, email, "Email already in use", "", "").Render(ctx.Request.Context(), ctx.Writer)
+		return
+	}
+
+	middleware.SetSessionUser(ctx, user.ID, user.Name)
+	middleware.SetFlash(ctx, "success", "Welcome, "+user.Name+"!")
+	ctx.Redirect(http.StatusFound, "/")
+}

@@ -1,30 +1,149 @@
 package database
 
 import (
-	"application/app/models"
+	"database/sql"
+	"fmt"
+	"log"
+	"os"
+	"path/filepath"
+	"sort"
+	"strings"
 
-	"github.com/jinzhu/gorm"
-
-	// stupid vscode rule
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
-var (
-	// Connection .
-	Connection *gorm.DB
-)
+var DB *gorm.DB
 
-// Setup .
-func init() {
-	Connection, _ = gorm.Open("sqlite3", "database/development.db")
+type DBConfig struct {
+	Driver  string
+	Host    string
+	Port    string
+	User    string
+	Pass    string
+	Name    string
+	SSLMode string
 }
 
-// ORM .
-func ORM() *gorm.DB {
-	return Connection
+func Connect(cfg DBConfig) {
+	var err error
+
+	switch cfg.Driver {
+	case "postgres":
+		dsn := fmt.Sprintf(
+			"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+			cfg.Host, cfg.Port, cfg.User, cfg.Pass, cfg.Name, cfg.SSLMode,
+		)
+		DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+
+	case "mysql":
+		dsn := fmt.Sprintf(
+			"%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local&multiStatements=true",
+			cfg.User, cfg.Pass, cfg.Host, cfg.Port, cfg.Name,
+		)
+		DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+
+	case "sqlite":
+		DB, err = gorm.Open(sqlite.Open(cfg.Name), &gorm.Config{})
+
+	default:
+		log.Fatalf("Unsupported database driver: %s", cfg.Driver)
+	}
+
+	if err != nil {
+		log.Fatalf("Failed to connect to database: %v", err)
+	}
+
+	log.Printf("Connected to %s database", cfg.Driver)
 }
 
-// Migrations .
-func Migrations() {
-	Connection.AutoMigrate()
+// RunMigrations executes all pending SQL migrations from database/migrations/.
+func RunMigrations() {
+	sqlDB, err := DB.DB()
+	if err != nil {
+		log.Fatalf("Failed to get underlying DB: %v", err)
+	}
+
+	if err := ensureMigrationsTable(sqlDB); err != nil {
+		log.Fatalf("Failed to create migrations table: %v", err)
+	}
+
+	applied, err := getAppliedMigrations(sqlDB)
+	if err != nil {
+		log.Fatalf("Failed to read applied migrations: %v", err)
+	}
+
+	files, _ := filepath.Glob("database/migrations/*.up.sql")
+	sort.Strings(files)
+
+	count := 0
+	for _, f := range files {
+		version := extractVersion(f)
+		if applied[version] {
+			continue
+		}
+
+		content, err := os.ReadFile(f)
+		if err != nil {
+			log.Fatalf("Failed to read migration %s: %v", f, err)
+		}
+
+		sqlStr := strings.TrimSpace(string(content))
+		if sqlStr == "" {
+			continue
+		}
+
+		log.Printf("Running migration: %s", filepath.Base(f))
+		if _, err := sqlDB.Exec(sqlStr); err != nil {
+			log.Fatalf("Migration %s failed: %v", filepath.Base(f), err)
+		}
+
+		recordMigration(sqlDB, version)
+		count++
+	}
+
+	if count > 0 {
+		log.Printf("Applied %d migration(s)", count)
+	}
+}
+
+func ensureMigrationsTable(db *sql.DB) error {
+	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS schema_migrations (
+		version VARCHAR(255) PRIMARY KEY,
+		applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+	)`)
+	return err
+}
+
+func getAppliedMigrations(db *sql.DB) (map[string]bool, error) {
+	rows, err := db.Query("SELECT version FROM schema_migrations")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	applied := make(map[string]bool)
+	for rows.Next() {
+		var v string
+		if err := rows.Scan(&v); err != nil {
+			return nil, err
+		}
+		applied[v] = true
+	}
+	return applied, nil
+}
+
+func recordMigration(db *sql.DB, version string) {
+	db.Exec("INSERT INTO schema_migrations (version) VALUES (?)", version)
+}
+
+func extractVersion(filename string) string {
+	base := filepath.Base(filename)
+	parts := strings.SplitN(base, "_", 2)
+	if len(parts) > 0 {
+		return parts[0]
+	}
+	return base
 }

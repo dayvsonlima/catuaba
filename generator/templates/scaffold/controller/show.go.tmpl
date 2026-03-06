@@ -1,23 +1,19 @@
 package {{.Name|toPlural|toSnake}}
 
 import (
-	"application/app/models"
+	"{{moduleName}}/app/models"
+	"{{moduleName}}/database"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-// Show .
+// Show handles GET /{{.Name|toPlural|toSnake}}/:id
 func Show(ctx *gin.Context) {
 	var {{.Name|toVarName}} models.{{.Name|toModelName}}
-	db.First(&{{.Name|toVarName}}, ctx.Param("id"))
 
-	if {{.Name|toVarName}}.ID == 0 {
-		ctx.JSON(http.StatusNotFound, gin.H{
-			"status":  http.StatusNotFound,
-			"message": "{{.Name|toVarName}} not found!",
-		})
-
+	if err := database.DB.First(&{{.Name|toVarName}}, ctx.Param("id")).Error; err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "Record not found"})
 		return
 	}
 

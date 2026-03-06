@@ -1,0 +1,33 @@
+package {{.Name|toPlural|toSnake}}_test
+
+import (
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
+
+	"{{moduleName}}/app/controllers/{{.Name|toPlural|toSnake}}"
+)
+
+func TestUpdate(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	t.Run("returns 404 when record not found", func(t *testing.T) {
+		router := gin.New()
+		router.PUT("/{{.Name|toPlural|toSnake}}/:id", {{.Name|toPlural|toSnake}}.Update)
+
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest("PUT", "/{{.Name|toPlural|toSnake}}/999999", nil)
+		req.Header.Set("Content-Type", "application/json")
+		router.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusNotFound, w.Code)
+
+		var response map[string]interface{}
+		json.Unmarshal(w.Body.Bytes(), &response)
+		assert.Contains(t, response, "error")
+	})
+}

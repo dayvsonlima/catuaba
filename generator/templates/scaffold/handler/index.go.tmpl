@@ -1,0 +1,47 @@
+package {{.Name|toPlural|toSnake}}
+
+import (
+	"math"
+	"net/http"
+	"strconv"
+
+	"{{moduleName}}/app/models"
+	views "{{moduleName}}/app/views/{{.Name|toPlural|toSnake}}"
+	"{{moduleName}}/database"
+	"{{moduleName}}/middleware"
+
+	"github.com/gin-gonic/gin"
+)
+
+// Index handles GET /{{.Name|toPlural|toSnake}}
+func Index(ctx *gin.Context) {
+	page, _ := strconv.Atoi(ctx.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(ctx.DefaultQuery("limit", "20"))
+
+	if page < 1 {
+		page = 1
+	}
+	if limit < 1 || limit > 100 {
+		limit = 20
+	}
+
+	var total int64
+	if err := database.DB.Model(&models.{{.Name|toModelName}}{}).Count(&total).Error; err != nil {
+		ctx.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	var items []models.{{.Name|toModelName}}
+	offset := (page - 1) * limit
+
+	if err := database.DB.Offset(offset).Limit(limit).Find(&items).Error; err != nil {
+		ctx.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	totalPages := int(math.Ceil(float64(total) / float64(limit)))
+	flashMsg, flashType := middleware.GetFlash(ctx)
+
+	ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+	views.Index(items, page, totalPages, flashMsg, flashType).Render(ctx.Request.Context(), ctx.Writer)
+}

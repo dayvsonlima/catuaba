@@ -1,0 +1,51 @@
+package {{.Name|toPlural|toSnake}}
+
+import (
+	"fmt"
+	"{{moduleName}}/app/models"
+	"{{moduleName}}/app/views/layouts"
+)
+
+templ Show(item models.{{.Name|toModelName}}, flashMsg string, flashType string) {
+	@layouts.Base("{{.Name}} Details", "", flashMsg, flashType) {
+		<div class="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
+			<div class="mb-6">
+				<a href="/{{.Name|toPlural|toSnake}}" class="text-sm text-indigo-600 hover:underline">← Back to {{.Name|toPlural}}</a>
+			</div>
+			<div class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+				<div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+					<h1 class="text-xl font-bold text-gray-900">{{.Name}} #{ fmt.Sprintf("%d", item.ID) }</h1>
+					<div class="flex gap-3">
+						<a href={ templ.SafeURL(fmt.Sprintf("/{{.Name|toPlural|toSnake}}/%d/edit", item.ID)) } class="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-500">Edit</a>
+						<form method="POST" action={ templ.SafeURL(fmt.Sprintf("/{{.Name|toPlural|toSnake}}/%d/delete", item.ID)) } onsubmit="return confirm('Are you sure?')">
+							<button type="submit" class="rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-red-500">Delete</button>
+						</form>
+					</div>
+				</div>
+				<dl class="divide-y divide-gray-200">
+					{{ range .Params}}<div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+						<dt class="text-sm font-medium text-gray-500">{{. | toFormLabel}}</dt>
+						{{ if eq (. | toFormInput) "checkbox" }}<dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">
+							if item.{{. | toAttrName}} {
+								<span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">Yes</span>
+							} else {
+								<span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">No</span>
+							}
+						</dd>
+						{{ else if eq (. | toFormInput) "textarea" }}<dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 whitespace-pre-wrap">{ fmt.Sprintf("%v", item.{{. | toAttrName}}) }</dd>
+						{{ else }}<dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{ fmt.Sprintf("%v", item.{{. | toAttrName}}) }</dd>
+						{{ end }}
+					</div>
+					{{ end }}<div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+						<dt class="text-sm font-medium text-gray-500">Created At</dt>
+						<dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{ item.CreatedAt.Format("Jan 02, 2006 15:04") }</dd>
+					</div>
+					<div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+						<dt class="text-sm font-medium text-gray-500">Updated At</dt>
+						<dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{ item.UpdatedAt.Format("Jan 02, 2006 15:04") }</dd>
+					</div>
+				</dl>
+			</div>
+		</div>
+	}
+}

@@ -1,5 +1,6 @@
 
 
+    // {{.Name}} routes
     routes.GET("/{{.Name|toPlural|toSnake}}", {{.Name|toPlural|toSnake}}.Index)
     routes.POST("/{{.Name|toPlural|toSnake}}", {{.Name|toPlural|toSnake}}.Create)
     routes.GET("/{{.Name|toPlural|toSnake}}/:id", {{.Name|toPlural|toSnake}}.Show)

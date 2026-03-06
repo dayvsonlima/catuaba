@@ -7,6 +7,11 @@
 *.out
 vendor/
 
+# Build artifacts
+catuaba_bin
+/catuaba
+!/catuaba.go
+
 [._]*.s[a-v][a-z]
 [._]*.sw[a-p]
 [._]s[a-rt-v][a-z]

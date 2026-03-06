@@ -1,71 +1,129 @@
 package scaffold
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/dayvsonlima/catuaba/cli/model"
+	"github.com/dayvsonlima/catuaba/cli/output"
 	"github.com/dayvsonlima/catuaba/code_editor"
 	"github.com/dayvsonlima/catuaba/generator"
-	"github.com/dayvsonlima/catuaba/templates/scaffold"
-	"github.com/dayvsonlima/catuaba/templates/scaffold/controller"
 	"github.com/urfave/cli/v2"
 )
 
-type ControllerBuilder struct {
+type HandlerBuilder struct {
 	Name       string
 	MethodName string
 	Params     []string
 }
 
 func Action(c *cli.Context) error {
-
-	data := model.ModelBuilder{
-		Name:   generator.Camelize(c.Args().Get(0)),
-		Params: model.GetModelAttributes(c),
+	if err := generator.IsInsideCatuabaProject(); err != nil {
+		return err
 	}
 
-	model.BuildModel(data)
+	name := c.Args().Get(0)
+	if name == "" {
+		return fmt.Errorf("scaffold name is required. Usage: catuaba g scaffold <name> [attributes...]")
+	}
 
-	BuildControllers(data)
-	BuildRoutes(data)
+	attrs := model.GetModelAttributes(c)
+	for _, attr := range attrs {
+		if !strings.Contains(attr, ":") {
+			return fmt.Errorf("invalid attribute format %q: expected name:type (e.g. title:string)", attr)
+		}
+	}
+
+	data := model.ModelBuilder{
+		Name:   generator.Camelize(name),
+		Params: attrs,
+	}
+
+	if err := model.BuildModel(data); err != nil {
+		return err
+	}
+
+	output.Info("Generating scaffold for: %s", data.Name)
+	if err := BuildHandlers(data); err != nil {
+		return err
+	}
+	if err := BuildViews(data); err != nil {
+		return err
+	}
+	if err := BuildRoutes(data); err != nil {
+		return err
+	}
+	output.Success("Scaffold %s generated successfully!", data.Name)
+
+	routeBase := "/" + generator.Snakeze(generator.Pluralize(data.Name))
+	output.Info("Routes created:")
+	output.Route("GET", routeBase)
+	output.Route("GET", routeBase+"/new")
+	output.Route("POST", routeBase)
+	output.Route("GET", routeBase+"/:id")
+	output.Route("GET", routeBase+"/:id/edit")
+	output.Route("POST", routeBase+"/:id")
+	output.Route("POST", routeBase+"/:id/delete")
+	output.Info("Next steps:")
+	output.Info("  Run 'make dev' to start the server")
+	output.Info("  Visit: http://localhost:8080%s", routeBase)
+
 	return nil
 }
 
-func BuildControllers(data model.ModelBuilder) {
+func BuildHandlers(data model.ModelBuilder) error {
 	name := data.Name
-	controllerName := generator.Snakeze(generator.Pluralize(name))
-	methods := []string{"create", "delete", "index", "show", "update"}
+	handlerName := generator.Snakeze(generator.Pluralize(name))
+	methods := []string{"index", "show", "new", "create", "edit", "update", "delete"}
 
-	generator.Mkdir(`app/controllers/` + controllerName)
+	if err := generator.Mkdir("app/controllers/" + handlerName); err != nil {
+		return err
+	}
 
 	for _, methodName := range methods {
-		data := ControllerBuilder{
+		handlerData := HandlerBuilder{
 			Name:       name,
 			MethodName: methodName,
 			Params:     data.Params,
 		}
 
-		controllerPath := "app/controllers/" + controllerName + "/" + methodName + ".go"
-
-		controllers := map[string]string{}
-		controllers["index"] = controller.Index
-		controllers["show"] = controller.Show
-		controllers["update"] = controller.Update
-		controllers["create"] = controller.Create
-		controllers["delete"] = controller.Delete
-
-		generator.GenerateFromContent(controllers[methodName], data, controllerPath)
+		handlerPath := "app/controllers/" + handlerName + "/" + methodName + ".go"
+		if err := generator.GenerateFile("scaffold/handler/"+methodName+".go.tmpl", handlerData, handlerPath); err != nil {
+			return err
+		}
 	}
 
-	generator.GenerateFromContent(controller.Shared, data, "app/controllers/"+controllerName+"/shared.go")
+	return nil
 }
 
-func BuildRoutes(data model.ModelBuilder) {
+func BuildViews(data model.ModelBuilder) error {
+	name := data.Name
+	viewName := generator.Snakeze(generator.Pluralize(name))
+	views := []string{"index", "show", "form"}
 
-	routes := generator.RenderFromContent(scaffold.Routes, data)
+	if err := generator.Mkdir("app/views/" + viewName); err != nil {
+		return err
+	}
 
-	code_editor.EditFile("config/routes.go", func(content string) string {
-		newPkg := "application/app/controllers/" + generator.Snakeze(generator.Pluralize(data.Name))
+	for _, viewFile := range views {
+		viewPath := "app/views/" + viewName + "/" + viewFile + ".templ"
+		if err := generator.GenerateFile("scaffold/view/"+viewFile+".templ.tmpl", data, viewPath); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func BuildRoutes(data model.ModelBuilder) error {
+	routes, err := generator.Render("scaffold/view_routes.go.tmpl", data)
+	if err != nil {
+		return err
+	}
+
+	return code_editor.EditFile("config/routes.go", func(content string) string {
+		moduleName := generator.ModuleName()
+		newPkg := moduleName + "/app/controllers/" + generator.Snakeze(generator.Pluralize(data.Name))
 
 		routesString := strings.ReplaceAll(content, "\n}", routes+"\n}")
 		routesString = code_editor.AddImport(routesString, newPkg)

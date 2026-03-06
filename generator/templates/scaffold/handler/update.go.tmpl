@@ -1,0 +1,46 @@
+package {{.Name|toPlural|toSnake}}
+
+import (
+	"fmt"
+	"net/http"
+
+	"{{moduleName}}/app/models"
+	views "{{moduleName}}/app/views/{{.Name|toPlural|toSnake}}"
+	"{{moduleName}}/database"
+	"{{moduleName}}/middleware"
+
+	"github.com/gin-gonic/gin"
+)
+
+type UpdateParams struct {
+	{{ range .Params}}{{. | toAttrName}} {{. | toType}} {{. | toFormBinding}}
+	{{ end }}
+}
+
+// Update handles POST /{{.Name|toPlural|toSnake}}/:id
+func Update(ctx *gin.Context) {
+	var {{.Name|toVarName}} models.{{.Name|toModelName}}
+
+	if err := database.DB.First(&{{.Name|toVarName}}, ctx.Param("id")).Error; err != nil {
+		ctx.String(http.StatusNotFound, "Record not found")
+		return
+	}
+
+	var params UpdateParams
+	if err := ctx.ShouldBind(&params); err != nil {
+		ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+		views.Form({{.Name|toVarName}}, true, map[string]string{"base": err.Error()}, "", "").Render(ctx.Request.Context(), ctx.Writer)
+		return
+	}
+
+	{{ range .Params}}{{$.Name|toVarName}}.{{. | toAttrName}} = params.{{. | toAttrName}}
+	{{ end }}
+	if err := database.DB.Save(&{{.Name|toVarName}}).Error; err != nil {
+		ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+		views.Form({{.Name|toVarName}}, true, map[string]string{"base": err.Error()}, "", "").Render(ctx.Request.Context(), ctx.Writer)
+		return
+	}
+
+	middleware.SetFlash(ctx, "success", fmt.Sprintf("{{.Name}} #%s updated!", ctx.Param("id")))
+	ctx.Redirect(http.StatusSeeOther, "/{{.Name|toPlural|toSnake}}")
+}

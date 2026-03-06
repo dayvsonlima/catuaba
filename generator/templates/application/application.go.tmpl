@@ -1,19 +1,103 @@
 package main
 
 import (
-	"application/config"
-	"application/database"
+	"context"
+	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
+	"{{.Name}}/app/controllers"
+	"{{.Name}}/app/views/pages"
+{{if .Auth}}	"{{.Name}}/app/controllers/auth"
+{{end}}	"{{.Name}}/config"
+	"{{.Name}}/database"
+	"{{.Name}}/middleware"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	config.Load()
+	database.Connect(database.DBConfig{
+		Driver:  config.App.DBDriver,
+		Host:    config.App.DBHost,
+		Port:    config.App.DBPort,
+		User:    config.App.DBUser,
+		Pass:    config.App.DBPass,
+		Name:    config.App.DBName,
+		SSLMode: config.App.DBSSLMode,
+	})
+	database.RunMigrations()
+
+	// gin.New() without default middleware — Catuaba configures its own stack below
 	engine := gin.New()
-	config.DrawRoutes(engine)
 
-	database.Migrations()
-	defer database.Connection.Close()
+	// Middleware stack
+	engine.Use(middleware.Health())
+	engine.Use(middleware.RequestID())
+	engine.Use(middleware.Logger())
+	engine.Use(middleware.Recovery())
+	engine.Use(middleware.SecureHeaders())
+	engine.Use(middleware.CORS())
+	engine.Use(middleware.RateLimit(10, 40)) // 10 req/s, burst of 40
+	engine.Use(middleware.Session())
+	engine.Use(middleware.CSRF())
 
-	engine.Use(gin.Logger())
-	engine.Run(":8080")
+	// Static files
+	engine.Static("/static", "./static")
+
+	// Home page
+	engine.GET("/", controllers.Home)
+{{if .Auth}}
+	// Auth routes
+	engine.GET("/login", auth.LoginForm)
+	engine.POST("/login", auth.LoginSubmit)
+	engine.GET("/register", auth.RegisterForm)
+	engine.POST("/register", auth.RegisterSubmit)
+	engine.POST("/logout", auth.Logout)
+{{end}}
+	config.SetupRoutes(engine)
+
+	// 404 handler
+	engine.NoRoute(func(ctx *gin.Context) {
+		if len(ctx.Request.URL.Path) > 4 && ctx.Request.URL.Path[:5] == "/api/" {
+			ctx.JSON(404, gin.H{"error": "Not found"})
+			return
+		}
+		ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+		ctx.Writer.WriteHeader(404)
+		pages.NotFound().Render(ctx.Request.Context(), ctx.Writer)
+	})
+
+	srv := &http.Server{
+		Addr:    ":" + config.App.AppPort,
+		Handler: engine,
+	}
+
+	// Start server in goroutine
+	go func() {
+		log.Printf("Starting %s on port %s", config.App.AppName, config.App.AppPort)
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("Failed to start server: %v", err)
+		}
+	}()
+
+	// Graceful shutdown
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	log.Println("Shutting down server...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Fatalf("Server forced to shutdown: %v", err)
+	}
+
+	log.Println("Server exited gracefully")
 }

@@ -1,0 +1,34 @@
+package {{.Name|toPlural|toSnake}}_test
+
+import (
+	"bytes"
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
+
+	"{{moduleName}}/app/controllers/{{.Name|toPlural|toSnake}}"
+)
+
+func TestCreate(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	t.Run("returns 400 on invalid JSON", func(t *testing.T) {
+		router := gin.New()
+		router.POST("/{{.Name|toPlural|toSnake}}", {{.Name|toPlural|toSnake}}.Create)
+
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest("POST", "/{{.Name|toPlural|toSnake}}", bytes.NewBufferString("invalid"))
+		req.Header.Set("Content-Type", "application/json")
+		router.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+
+		var response map[string]interface{}
+		json.Unmarshal(w.Body.Bytes(), &response)
+		assert.Contains(t, response, "error")
+	})
+}

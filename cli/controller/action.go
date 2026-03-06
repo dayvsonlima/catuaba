@@ -1,6 +1,9 @@
 package controller
 
 import (
+	"fmt"
+
+	"github.com/dayvsonlima/catuaba/cli/output"
 	"github.com/dayvsonlima/catuaba/generator"
 	"github.com/urfave/cli/v2"
 )
@@ -11,12 +14,25 @@ type ControllerBuilder struct {
 }
 
 func Action(c *cli.Context) error {
-	var (
-		name   = c.Args().Get(0)
-		params = getAttributes(c)
-	)
+	if err := generator.IsInsideCatuabaProject(); err != nil {
+		return err
+	}
 
-	generator.Mkdir(`app/controllers/` + generator.Snakeze(name))
+	name := c.Args().Get(0)
+	if name == "" {
+		return fmt.Errorf("controller name is required. Usage: catuaba g controller <name> [methods...]")
+	}
+
+	params := getAttributes(c)
+	if len(params) == 0 {
+		return fmt.Errorf("at least one method name is required. Usage: catuaba g controller <name> index show create")
+	}
+
+	output.Info("Generating controller: %s", name)
+
+	if err := generator.Mkdir(`app/controllers/` + generator.Snakeze(name)); err != nil {
+		return err
+	}
 
 	for _, methodName := range params {
 		data := ControllerBuilder{
@@ -27,6 +43,14 @@ func Action(c *cli.Context) error {
 		controllerPath := "app/controllers/" + generator.Snakeze(name) + "/" + methodName + ".go"
 		generator.GenerateFile("controller.go.tmpl", data, controllerPath)
 	}
+
+	output.Success("Controller %s generated successfully!", name)
+
+	// Next steps
+	snakeName := generator.Snakeze(name)
+	output.Info("Next steps:")
+	output.Info("  Register routes in config/routes.go:")
+	output.Info("    routes.GET(\"/%s\", %s.%s)", snakeName, snakeName, generator.Camelize(params[0]))
 
 	return nil
 }

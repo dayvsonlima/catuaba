@@ -3,12 +3,11 @@ package generator
 import "fmt"
 
 func LoadFile(fileName string) string {
-	output, err := Box.FindString(fileName)
-
+	content, err := templateFS.ReadFile("templates/" + fileName)
 	if err != nil {
 		fmt.Println(err)
 		return ""
 	}
 
-	return output
+	return string(content)
 }

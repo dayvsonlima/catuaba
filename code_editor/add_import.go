@@ -1,50 +1,132 @@
 package code_editor
 
 import (
-	"regexp"
+	"bytes"
+	"go/ast"
+	"go/parser"
+	"go/printer"
+	"go/token"
+	"strconv"
 	"strings"
 )
 
-// AddImport
-// Adds a new package to golang code inside the "import" statement
+// AddImport adds a new package import to Go source code using AST parsing.
+// Falls back to regex-based approach if AST parsing fails.
 func AddImport(code, path string) string {
+	fset := token.NewFileSet()
+	f, err := parser.ParseFile(fset, "", code, parser.ParseComments)
+	if err != nil {
+		return addImportRegex(code, path)
+	}
 
-	rgx := `import(.|)\(((.|\n)+?)\)`
-	compiledRegex := regexp.MustCompile(rgx)
-	submatch := compiledRegex.FindStringSubmatch(code)
+	// Check if import already exists
+	quotedPath := strconv.Quote(path)
+	for _, imp := range f.Imports {
+		if imp.Path.Value == quotedPath {
+			return code
+		}
+	}
 
-	pkgString := submatch[2]
-	pkgs := strings.Split(pkgString, "\n")
+	// Find the import declaration and add the new import
+	added := false
+	for _, decl := range f.Decls {
+		genDecl, ok := decl.(*ast.GenDecl)
+		if !ok || genDecl.Tok != token.IMPORT {
+			continue
+		}
 
-	pkgs = append(pkgs, "\""+path+"\"")
-	normalized := normalizePkgs(pkgs)
-	output := "import (\n\t" + strings.Join(normalized, "\n\t") + "\n)"
+		newSpec := &ast.ImportSpec{
+			Path: &ast.BasicLit{
+				Kind:  token.STRING,
+				Value: quotedPath,
+			},
+		}
+		genDecl.Specs = append(genDecl.Specs, newSpec)
+		added = true
+		break
+	}
 
-	return compiledRegex.ReplaceAllString(code, output)
+	if !added {
+		return addImportRegex(code, path)
+	}
+
+	var buf bytes.Buffer
+	if err := printer.Fprint(&buf, fset, f); err != nil {
+		return addImportRegex(code, path)
+	}
+
+	return buf.String()
 }
 
+// AddImportIfNotExist adds an import only if it doesn't already exist in the code.
 func AddImportIfNotExist(code, path string) string {
-	if !strings.Contains(code, path) {
-		code = AddImport(code, path)
+	if strings.Contains(code, path) {
+		return code
 	}
-
-	return code
+	return AddImport(code, path)
 }
 
-func normalizePkgs(pkgs []string) []string {
-
-	check := make(map[string]int)
-	var output []string
-
-	for _, value := range pkgs {
-		current := strings.Trim(value, " ")
-		current = strings.Trim(current, "\t")
-		check[current] = 1
+// AddAliasedImport adds a new aliased package import (e.g., alias "path/to/pkg").
+func AddAliasedImport(code, alias, path string) string {
+	fset := token.NewFileSet()
+	f, err := parser.ParseFile(fset, "", code, parser.ParseComments)
+	if err != nil {
+		return addAliasedImportRegex(code, alias, path)
 	}
 
-	for value, _ := range check {
-		output = append(output, value)
+	quotedPath := strconv.Quote(path)
+	for _, imp := range f.Imports {
+		if imp.Path.Value == quotedPath {
+			return code
+		}
 	}
 
-	return output
+	added := false
+	for _, decl := range f.Decls {
+		genDecl, ok := decl.(*ast.GenDecl)
+		if !ok || genDecl.Tok != token.IMPORT {
+			continue
+		}
+
+		newSpec := &ast.ImportSpec{
+			Name: ast.NewIdent(alias),
+			Path: &ast.BasicLit{
+				Kind:  token.STRING,
+				Value: quotedPath,
+			},
+		}
+		genDecl.Specs = append(genDecl.Specs, newSpec)
+		added = true
+		break
+	}
+
+	if !added {
+		return addAliasedImportRegex(code, alias, path)
+	}
+
+	var buf bytes.Buffer
+	if err := printer.Fprint(&buf, fset, f); err != nil {
+		return addAliasedImportRegex(code, alias, path)
+	}
+
+	return buf.String()
+}
+
+func addAliasedImportRegex(code, alias, path string) string {
+	idx := strings.LastIndex(code, ")")
+	if idx == -1 {
+		return code
+	}
+	return code[:idx] + "\t" + alias + " \"" + path + "\"\n" + code[idx:]
+}
+
+// addImportRegex is the legacy regex-based fallback for adding imports
+func addImportRegex(code, path string) string {
+	// Simple approach: find "import (" and add before closing ")"
+	idx := strings.LastIndex(code, ")")
+	if idx == -1 {
+		return code
+	}
+
+	return code[:idx] + "\t\"" + path + "\"\n" + code[idx:]
 }

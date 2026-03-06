@@ -1,0 +1,49 @@
+package auth
+
+import (
+	"net/http"
+
+	"{{.Name}}/app/models"
+	views "{{.Name}}/app/views/auth"
+	"{{.Name}}/database"
+	"{{.Name}}/middleware"
+
+	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
+)
+
+// LoginForm renders the login page.
+func LoginForm(ctx *gin.Context) {
+	flashMsg, flashType := middleware.GetFlash(ctx)
+	ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+	views.Login("", "", flashMsg, flashType).Render(ctx.Request.Context(), ctx.Writer)
+}
+
+// LoginSubmit processes the login form.
+func LoginSubmit(ctx *gin.Context) {
+	email := ctx.PostForm("email")
+	password := ctx.PostForm("password")
+
+	if email == "" || password == "" {
+		ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+		views.Login(email, "Email and password are required", "", "").Render(ctx.Request.Context(), ctx.Writer)
+		return
+	}
+
+	var user models.User
+	if err := database.DB.Where("email = ?", email).First(&user).Error; err != nil {
+		ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+		views.Login(email, "Invalid email or password", "", "").Render(ctx.Request.Context(), ctx.Writer)
+		return
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
+		ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+		views.Login(email, "Invalid email or password", "", "").Render(ctx.Request.Context(), ctx.Writer)
+		return
+	}
+
+	middleware.SetSessionUser(ctx, user.ID, user.Name)
+	middleware.SetFlash(ctx, "success", "Welcome back, "+user.Name+"!")
+	ctx.Redirect(http.StatusFound, "/")
+}

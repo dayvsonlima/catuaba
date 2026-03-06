@@ -1,16 +1,13 @@
-FROM golang:alpine as build-env
+FROM golang:1.22-alpine AS build
 
-# Set the working directory
-WORKDIR /go/src/app
+WORKDIR /src
+COPY go.mod go.sum ./
+RUN go mod download
 
-# Copy the source code into the container
 COPY . .
+RUN CGO_ENABLED=0 go build -o /bin/catuaba .
 
-# Install build-dependencies
-RUN apk add --no-cache git
-
-# Build the Go application
-RUN go build -o catuaba .
-
-WORKDIR /home
-ENTRYPOINT [ "/go/src/app/catuaba" ]
+FROM alpine:3.19
+RUN apk add --no-cache ca-certificates
+COPY --from=build /bin/catuaba /usr/local/bin/catuaba
+ENTRYPOINT ["catuaba"]
