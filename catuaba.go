@@ -28,7 +28,7 @@ import (
 func main() {
 	app := &cli.App{
 		Name:    "catuaba",
-		Usage:   "A Rails-like framework for Go",
+		Usage:   "Build full-stack Go web apps in minutes, not days",
 		Version: "0.1.0",
 		Commands: []*cli.Command{
 			{
