@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"mime"
 	"net/http"
 	"os"
 	"os/signal"
@@ -15,6 +16,17 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
+
+func init() {
+	// Ensure correct MIME types for static assets.
+	// On some platforms Go's mime database may be incomplete,
+	// causing browsers to reject files when X-Content-Type-Options: nosniff is set.
+	mime.AddExtensionType(".css", "text/css; charset=utf-8")
+	mime.AddExtensionType(".js", "text/javascript; charset=utf-8")
+	mime.AddExtensionType(".svg", "image/svg+xml")
+	mime.AddExtensionType(".woff2", "font/woff2")
+	mime.AddExtensionType(".woff", "font/woff")
+}
 
 func main() {
 	config.Load()

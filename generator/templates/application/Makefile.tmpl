@@ -5,16 +5,14 @@ GOBIN=$(shell go env GOPATH)/bin
 
 ## dev: Start development with hot reload (templ + tailwind + go)
 dev:
-	@command -v wgo >/dev/null 2>&1 || { echo "Installing wgo..."; go install github.com/bokwoon95/wgo@latest; }
 	@command -v templ >/dev/null 2>&1 || { echo "Installing templ..."; go install github.com/a-h/templ/cmd/templ@latest; }
 	@test -d node_modules || npm install
-	@PATH="$(GOBIN):$$PATH" wgo -file .go -file .templ templ generate :: \
-	 wgo run . :: \
-	 wgo -file .templ -file .css npx @tailwindcss/cli -i static/css/input.css -o static/css/app.css --watch
+	@npx @tailwindcss/cli -i static/css/input.css -o static/css/app.css
+	@PATH="$(GOBIN):$$PATH" templ generate -watch -proxy="http://localhost:8080" -cmd="go run ." &
+	@npx @tailwindcss/cli -i static/css/input.css -o static/css/app.css --watch
 
 ## setup: Install development dependencies
 setup:
-	go install github.com/bokwoon95/wgo@latest
 	go install github.com/a-h/templ/cmd/templ@latest
 	npm install
 

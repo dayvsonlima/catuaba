@@ -20,16 +20,19 @@ import (
 	"github.com/dayvsonlima/catuaba/cli/seed"
 	"github.com/dayvsonlima/catuaba/cli/server"
 	"github.com/dayvsonlima/catuaba/cli/service"
+	"github.com/dayvsonlima/catuaba/cli/upgrade"
 	"github.com/dayvsonlima/catuaba/cli/view"
 
 	"github.com/urfave/cli/v2"
 )
 
 func main() {
+	version := "0.1.5"
 	app := &cli.App{
-		Name:    "catuaba",
-		Usage:   "Build full-stack Go web apps in minutes, not days",
-		Version: "0.1.5",
+		Name:     "catuaba",
+		Usage:    "Build full-stack Go web apps in minutes, not days",
+		Version:  version,
+		Metadata: map[string]interface{}{"version": version},
 		Commands: []*cli.Command{
 			{
 				Name:   "mcp",
@@ -106,6 +109,11 @@ func main() {
 						Usage: "set plugin variable (key=value)",
 					},
 				},
+			},
+			{
+				Name:   "upgrade",
+				Usage:  "upgrade catuaba to the latest version",
+				Action: upgrade.Action,
 			},
 			{
 				Name:  "plugin",
