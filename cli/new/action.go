@@ -3,7 +3,9 @@ package new
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"regexp"
+	"strings"
 
 	"github.com/dayvsonlima/catuaba/cli/output"
 	"github.com/dayvsonlima/catuaba/generator"
@@ -174,10 +176,34 @@ func Action(c *cli.Context) error {
 		}
 	}
 
+	// Generate templ files before tidy so templ dependency is preserved in go.sum
+	templPath, _ := exec.LookPath("templ")
+	if templPath == "" {
+		// Check GOPATH/bin if not in PATH
+		gopath, _ := exec.Command("go", "env", "GOPATH").Output()
+		candidate := strings.TrimSpace(string(gopath)) + "/bin/templ"
+		if _, err := os.Stat(candidate); err == nil {
+			templPath = candidate
+		}
+	}
+	if templPath != "" {
+		templ := exec.Command(templPath, "generate")
+		templ.Dir = name
+		if err := templ.Run(); err != nil {
+			output.Warning("templ generate failed: %v", err)
+		}
+	}
+
+	// Resolve dependencies
+	tidy := exec.Command("go", "mod", "tidy")
+	tidy.Dir = name
+	if err := tidy.Run(); err != nil {
+		output.Warning("go mod tidy failed: %v (run it manually)", err)
+	}
+
 	output.Success("Application %s created successfully!", name)
 	output.Info("Next steps:")
 	output.Info("  cd %s", name)
-	output.Info("  go mod tidy")
 	output.Info("  npm install")
 	output.Info("  make dev")
 
