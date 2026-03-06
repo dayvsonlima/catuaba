@@ -13,54 +13,70 @@ func Pluralize(in string) string {
 	return inflection.Plural(in)
 }
 
-func Camelize(in string) string {
-	runes := []rune(in)
-	var out []rune
+// goAcronyms maps common Go acronyms that should be fully uppercased.
+var goAcronyms = map[string]string{
+	"id": "ID", "url": "URL", "api": "API", "http": "HTTP",
+	"https": "HTTPS", "html": "HTML", "css": "CSS", "json": "JSON",
+	"xml": "XML", "sql": "SQL", "ssh": "SSH", "tcp": "TCP",
+	"udp": "UDP", "ip": "IP", "uri": "URI", "uuid": "UUID",
+	"uid": "UID", "cpu": "CPU", "gpu": "GPU", "os": "OS",
+	"db": "DB", "io": "IO", "vm": "VM",
+}
 
-	for i, r := range runes {
-		if r == '_' {
+func Camelize(in string) string {
+	parts := strings.Split(in, "_")
+	var out strings.Builder
+
+	for _, part := range parts {
+		if part == "" {
 			continue
 		}
-		if i == 0 || runes[i-1] == '_' {
-			out = append(out, unicode.ToUpper(r))
-			continue
+		if acronym, ok := goAcronyms[strings.ToLower(part)]; ok {
+			out.WriteString(acronym)
+		} else {
+			out.WriteRune(unicode.ToUpper(rune(part[0])))
+			out.WriteString(part[1:])
 		}
-		out = append(out, r)
 	}
 
-	return string(out)
+	return out.String()
 }
 
 func CamelizeVar(in string) string {
-	runes := []rune(in)
-	var out []rune
+	parts := strings.Split(in, "_")
+	var out strings.Builder
 
-	for i, r := range runes {
-		if r == '_' {
+	for i, part := range parts {
+		if part == "" {
 			continue
 		}
-
 		if i == 0 {
-			out = append(out, unicode.ToLower(r))
-			continue
+			if acronym, ok := goAcronyms[strings.ToLower(part)]; ok {
+				out.WriteString(strings.ToLower(acronym))
+			} else {
+				out.WriteRune(unicode.ToLower(rune(part[0])))
+				out.WriteString(part[1:])
+			}
+		} else {
+			if acronym, ok := goAcronyms[strings.ToLower(part)]; ok {
+				out.WriteString(acronym)
+			} else {
+				out.WriteRune(unicode.ToUpper(rune(part[0])))
+				out.WriteString(part[1:])
+			}
 		}
-
-		if i == 0 || runes[i-1] == '_' {
-			out = append(out, unicode.ToUpper(r))
-			continue
-		}
-		out = append(out, r)
 	}
 
-	return string(out)
+	return out.String()
 }
 
 func Snakeze(str string) string {
-	matchFirstCap := regexp.MustCompile("(.)([A-Z][a-z]+)")
-	matchAllCap := regexp.MustCompile("([a-z0-9])([A-Z])")
+	// Handle transitions like "ConversationID" -> "Conversation_ID"
+	matchFirstCap := regexp.MustCompile("([A-Z]+)([A-Z][a-z])")
+	matchLowerUpper := regexp.MustCompile("([a-z0-9])([A-Z])")
 
 	snake := matchFirstCap.ReplaceAllString(str, "${1}_${2}")
-	snake = matchAllCap.ReplaceAllString(snake, "${1}_${2}")
+	snake = matchLowerUpper.ReplaceAllString(snake, "${1}_${2}")
 	return strings.ToLower(snake)
 }
 

@@ -18,12 +18,22 @@ func TestCamelize(t *testing.T) {
 	assert.Equal(t, "Post", generator.Camelize("post"))
 	assert.Equal(t, "MyModel", generator.Camelize("my_model"))
 	assert.Equal(t, "UserProfile", generator.Camelize("user_profile"))
+	assert.Equal(t, "ConversationID", generator.Camelize("conversation_id"))
+	assert.Equal(t, "UserID", generator.Camelize("user_id"))
+	assert.Equal(t, "APIURL", generator.Camelize("api_url"))
+	assert.Equal(t, "HTTPURL", generator.Camelize("http_url"))
+	assert.Equal(t, "ID", generator.Camelize("id"))
+	assert.Equal(t, "DB", generator.Camelize("db"))
 }
 
 func TestSnakeze(t *testing.T) {
 	assert.Equal(t, "my_model", generator.Snakeze("MyModel"))
 	assert.Equal(t, "user_profile", generator.Snakeze("UserProfile"))
 	assert.Equal(t, "html_parser", generator.Snakeze("HTMLParser"))
+	assert.Equal(t, "conversation_id", generator.Snakeze("ConversationID"))
+	assert.Equal(t, "user_id", generator.Snakeze("UserID"))
+	assert.Equal(t, "httpurl", generator.Snakeze("HTTPURL"))   // consecutive acronyms merge (edge case)
+	assert.Equal(t, "http_server", generator.Snakeze("HTTPServer"))
 }
 
 func TestLowerPlural(t *testing.T) {
@@ -34,6 +44,8 @@ func TestLowerPlural(t *testing.T) {
 func TestGetAttributeName(t *testing.T) {
 	assert.Equal(t, "Title", generator.GetAttributeName("title:string"))
 	assert.Equal(t, "UserName", generator.GetAttributeName("user_name:string"))
+	assert.Equal(t, "ConversationID", generator.GetAttributeName("conversation_id:integer"))
+	assert.Equal(t, "UserID", generator.GetAttributeName("user_id:integer"))
 }
 
 func TestGetAttributeType(t *testing.T) {
@@ -54,16 +66,10 @@ func TestGetAttributeJsonBinding(t *testing.T) {
 }
 
 func TestCamelizeVar(t *testing.T) {
-
-	t.Run("When receive a single text", func(t *testing.T) {
-		expected := "post"
-		output := generator.CamelizeVar("Post")
-		assert.Equal(t, expected, output)
-	})
-
-	t.Run("When receive a complex text", func(t *testing.T) {
-		expected := "mySuperVarName"
-		output := generator.CamelizeVar("MySuper_var_name")
-		assert.Equal(t, expected, output)
-	})
+	assert.Equal(t, "post", generator.CamelizeVar("post"))
+	assert.Equal(t, "mySuperVarName", generator.CamelizeVar("my_super_var_name"))
+	assert.Equal(t, "conversationID", generator.CamelizeVar("conversation_id"))
+	assert.Equal(t, "userID", generator.CamelizeVar("user_id"))
+	assert.Equal(t, "id", generator.CamelizeVar("id"))
+	assert.Equal(t, "apiURL", generator.CamelizeVar("api_url"))
 }
