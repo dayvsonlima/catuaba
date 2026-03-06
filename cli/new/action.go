@@ -126,7 +126,6 @@ func Action(c *cli.Context) error {
 		{"application/Makefile.tmpl", data.Name + "/Makefile"},
 		{"application/dot-gitignore.tmpl", data.Name + "/.gitignore"},
 		{"application/github-actions.yml.tmpl", data.Name + "/.github/workflows/ci.yml"},
-		{"application/air.toml.tmpl", data.Name + "/.air.toml"},
 		{"application/README.md.tmpl", data.Name + "/README.md"},
 		{"application/CLAUDE.md.tmpl", data.Name + "/CLAUDE.md"},
 		{"application/dot-mcp.json.tmpl", data.Name + "/.mcp.json"},

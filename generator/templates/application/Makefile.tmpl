@@ -1,26 +1,12 @@
-.PHONY: run build test lint clean docker-up docker-down dev templ-watch css-watch air-watch
+.PHONY: dev build test lint clean docker-up docker-down tidy help
 
 APP_NAME={{.Name}}
 
-## dev: Start development (templ + tailwind + air)
+## dev: Start development with hot reload (templ + tailwind + go)
 dev:
-	@make -j3 templ-watch css-watch air-watch
-
-## templ-watch: Watch and regenerate templ files
-templ-watch:
-	@templ generate --watch
-
-## css-watch: Watch and rebuild Tailwind CSS
-css-watch:
-	@npx @tailwindcss/cli -i static/css/input.css -o static/css/app.css --watch
-
-## air-watch: Start air for hot reload
-air-watch:
-	@air
-
-## run: Start the application with hot reload (requires air)
-run:
-	@air
+	@wgo -file .go -file .templ templ generate :: \
+	 wgo run . :: \
+	 wgo -file .templ -file .css npx @tailwindcss/cli -i static/css/input.css -o static/css/app.css --watch
 
 ## build: Build the application binary
 build:

@@ -233,7 +233,7 @@ During development, `make dev` runs the Tailwind watcher that recompiles on save
 
 1. Edit `.templ` files
 2. Templ watcher recompiles to `_templ.go` files
-3. Air detects the Go file change and rebuilds the server
+3. wgo detects the Go file change and rebuilds the server
 4. Browser refreshes (or HTMX swaps the content)
 
 All three watchers run in parallel with `make dev`.

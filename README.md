@@ -34,7 +34,7 @@ That's it. You now have a running blog with:
 - Full CRUD for Posts — HTML views **and** JSON API
 - User registration and login with **bcrypt + sessions**
 - Database migrations, CSRF protection, flash messages
-- Hot-reload in development (Templ + Tailwind + Air)
+- Hot-reload in development (Templ + Tailwind + wgo)
 - Docker-ready for production
 
 <br/>
@@ -129,7 +129,7 @@ go install github.com/dayvsonlima/catuaba@latest
 
 - **Go 1.22+**
 - **Templ** — `go install github.com/a-h/templ/cmd/templ@latest`
-- **Air** (optional, hot-reload) — `go install github.com/air-verse/air@latest`
+- **wgo** (hot-reload) — `go install github.com/bokwoon95/wgo@latest`
 - A database: PostgreSQL, MySQL, or SQLite
 
 ---
@@ -175,7 +175,7 @@ Open `http://localhost:8080` — done.
 Three watchers run in parallel:
 - **Templ** — recompiles `.templ` files on save
 - **Tailwind** — rebuilds CSS on save
-- **Air** — rebuilds and restarts the Go server
+- **wgo** — rebuilds and restarts the Go server
 
 ---
 
@@ -496,7 +496,7 @@ make build
 ### Make targets
 
 ```bash
-make dev          # Hot-reload (templ + tailwind + air)
+make dev          # Hot-reload (templ + tailwind + wgo)
 make build        # Production binary
 make test         # go test ./...
 make tidy         # go mod tidy

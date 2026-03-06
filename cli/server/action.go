@@ -16,7 +16,7 @@ func Action(c *cli.Context) error {
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
-	cmd := exec.Command("air")
+	cmd := exec.Command("wgo", "run", ".")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
@@ -29,8 +29,8 @@ func Action(c *cli.Context) error {
 	}()
 
 	if err := cmd.Run(); err != nil {
-		output.Error("Error running air: %v", err)
-		output.Info("Make sure 'air' is installed: go install github.com/air-verse/air@latest")
+		output.Error("Error running wgo: %v", err)
+		output.Info("Make sure 'wgo' is installed: go install github.com/bokwoon95/wgo@latest")
 		return err
 	}
 
