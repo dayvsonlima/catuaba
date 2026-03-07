@@ -24,6 +24,9 @@ func templateFuncMap() template.FuncMap {
 		"toRawType":      GetAttributeRawType,
 		"toSQLType":      GetSQLType,
 		"toSQLDefault":   GetSQLDefault,
+		"toSQLPrimaryKey": GetSQLPrimaryKey,
+		"toSQLDefaultFor": GetSQLDefaultForDriver,
+		"hasType":         HasType,
 		"toColumnName":   GetSQLColumnName,
 		"moduleName":     ModuleName,
 	}

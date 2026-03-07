@@ -1,0 +1,29 @@
+package components
+
+templ StatusBadge(text string, variant string) {
+	<span class={ badgeClasses(variant) }>{ text }</span>
+}
+
+templ BooleanBadge(value bool) {
+	if value {
+		@StatusBadge("Yes", "success")
+	} else {
+		@StatusBadge("No", "default")
+	}
+}
+
+func badgeClasses(variant string) string {
+	base := "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
+	switch variant {
+	case "success":
+		return base + " bg-green-100 text-green-800"
+	case "warning":
+		return base + " bg-yellow-100 text-yellow-800"
+	case "error":
+		return base + " bg-red-100 text-red-800"
+	case "info":
+		return base + " bg-blue-100 text-blue-800"
+	default:
+		return base + " bg-gray-100 text-gray-800"
+	}
+}

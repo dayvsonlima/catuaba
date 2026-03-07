@@ -1,2 +1,54 @@
 @import "tailwindcss";
 @source "../../app/views/**/*.templ";
+
+@theme {
+	--color-primary-50: oklch(0.97 0.014 264);
+	--color-primary-100: oklch(0.94 0.028 264);
+	--color-primary-200: oklch(0.87 0.058 264);
+	--color-primary-300: oklch(0.78 0.098 264);
+	--color-primary-400: oklch(0.67 0.15 264);
+	--color-primary-500: oklch(0.59 0.19 264);
+	--color-primary-600: oklch(0.52 0.21 264);
+	--color-primary-700: oklch(0.46 0.19 264);
+	--color-primary-800: oklch(0.39 0.16 264);
+	--color-primary-900: oklch(0.34 0.13 264);
+	--color-primary-950: oklch(0.25 0.1 264);
+}
+
+[x-cloak] { display: none !important; }
+
+@keyframes fade-in-down {
+	from {
+		opacity: 0;
+		transform: translateY(-0.5rem);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.animate-fade-in-down {
+	animation: fade-in-down 0.3s ease-out;
+}
+
+/* HTMX progress indicator */
+.htmx-indicator {
+	opacity: 0;
+	transition: opacity 0.2s ease-in;
+}
+
+.htmx-request .htmx-indicator,
+.htmx-request.htmx-indicator {
+	opacity: 1;
+}
+
+@keyframes progress {
+	0% { width: 0; }
+	50% { width: 70%; }
+	100% { width: 95%; }
+}
+
+.animate-progress {
+	animation: progress 2s ease-in-out infinite;
+}

@@ -66,11 +66,9 @@ func MigrateAction(c *cli.Context) error {
 			return fmt.Errorf("migration %s failed: %w", filepath.Base(f), err)
 		}
 
-		if _, err := db.Exec("INSERT INTO schema_migrations (version) VALUES ($1)", version); err != nil {
-			// Retry with ? placeholder for MySQL/SQLite
-			if _, err2 := db.Exec("INSERT INTO schema_migrations (version) VALUES (?)", version); err2 != nil {
-				return fmt.Errorf("failed to record migration %s: %w", version, err)
-			}
+		ph := placeholder(driver)
+		if _, err := db.Exec("INSERT INTO schema_migrations (version) VALUES ("+ph+")", version); err != nil {
+			return fmt.Errorf("failed to record migration %s: %w", version, err)
 		}
 
 		pending++
@@ -139,8 +137,8 @@ func RollbackAction(c *cli.Context) error {
 	}
 
 	// Remove from schema_migrations
-	db.Exec("DELETE FROM schema_migrations WHERE version = $1", version)
-	db.Exec("DELETE FROM schema_migrations WHERE version = ?", version)
+	ph := placeholder(driver)
+	db.Exec("DELETE FROM schema_migrations WHERE version = "+ph, version)
 
 	output.Success("Rolled back: %s", version)
 	return nil
@@ -211,14 +209,17 @@ func connectDB() (*sql.DB, string, error) {
 	var dsn string
 	switch driver {
 	case "postgres":
-		dsn = fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
-			getEnv("DB_HOST", "localhost"),
-			getEnv("DB_PORT", "5432"),
-			getEnv("DB_USER", "postgres"),
-			os.Getenv("DB_PASS"),
-			os.Getenv("DB_NAME"),
-			getEnv("DB_SSLMODE", "disable"),
-		)
+		parts := []string{
+			"host=" + getEnv("DB_HOST", "localhost"),
+			"port=" + getEnv("DB_PORT", "5432"),
+			"user=" + getEnv("DB_USER", "postgres"),
+			"dbname=" + os.Getenv("DB_NAME"),
+			"sslmode=" + getEnv("DB_SSLMODE", "disable"),
+		}
+		if pass := os.Getenv("DB_PASS"); pass != "" {
+			parts = append(parts, "password="+pass)
+		}
+		dsn = strings.Join(parts, " ")
 	case "mysql":
 		dsn = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true&multiStatements=true",
 			getEnv("DB_USER", "root"),
@@ -309,4 +310,11 @@ func getEnv(key, fallback string) string {
 		return v
 	}
 	return fallback
+}
+
+func placeholder(driver string) string {
+	if driver == "postgres" {
+		return "$1"
+	}
+	return "?"
 }

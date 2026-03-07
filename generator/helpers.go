@@ -108,6 +108,8 @@ func GetAttributeType(in string) string {
 		return "bool"
 	case "datetime":
 		return "time.Time"
+	case "references":
+		return "uint"
 	default:
 		return raw
 	}
@@ -176,6 +178,8 @@ func GetSQLType(in string) string {
 		return "BOOLEAN"
 	case "datetime", "time.Time":
 		return "TIMESTAMP"
+	case "references":
+		return "BIGINT"
 	default:
 		return "VARCHAR(255)"
 	}
@@ -220,4 +224,47 @@ func GetFormInputType(in string) string {
 	default:
 		return "text"
 	}
+}
+
+// GetSQLPrimaryKey returns the driver-specific PRIMARY KEY definition.
+func GetSQLPrimaryKey(driver string) string {
+	switch driver {
+	case "postgres":
+		return "BIGSERIAL PRIMARY KEY"
+	case "mysql":
+		return "BIGINT AUTO_INCREMENT PRIMARY KEY"
+	default:
+		return "INTEGER PRIMARY KEY AUTOINCREMENT"
+	}
+}
+
+// GetSQLDefaultForDriver returns the driver-aware default value for a SQL column.
+func GetSQLDefaultForDriver(driver, attr string) string {
+	attribute := strings.Split(attr, ":")
+	typ := attribute[1]
+
+	switch typ {
+	case "bool", "boolean":
+		if driver == "postgres" {
+			return "FALSE"
+		}
+		return "0"
+	case "string", "text":
+		return "''"
+	case "int", "integer", "uint", "float64", "float", "references":
+		return "0"
+	default:
+		return "''"
+	}
+}
+
+// HasType checks if any of the params have the given raw type.
+func HasType(params []string, typ string) bool {
+	for _, p := range params {
+		parts := strings.Split(p, ":")
+		if len(parts) >= 2 && parts[1] == typ {
+			return true
+		}
+	}
+	return false
 }

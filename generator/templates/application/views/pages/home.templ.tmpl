@@ -3,36 +3,51 @@ package pages
 import "{{.Name}}/app/views/layouts"
 
 templ Home() {
-	@layouts.Base("Home", "{{.Name}}", "", "") {
-		<div class="mx-auto max-w-4xl px-4 py-16 sm:py-24 text-center">
+	@layouts.Base("Home", "", "") {
+		<div class="mx-auto max-w-4xl px-4 py-12 sm:py-16 text-center">
 			<h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
 				Welcome to
-				<span class="text-indigo-600">{{.Name}}</span>
+				<span class="text-primary-600">{{.Name}}</span>
 			</h1>
 			<p class="mt-6 text-lg leading-8 text-gray-600 max-w-2xl mx-auto">
 				Your application is up and running. Built with
-				<a href="https://github.com/dayvsonlima/catuaba" class="text-indigo-600 hover:underline">Catuaba</a>,
-				<a href="https://templ.guide" class="text-indigo-600 hover:underline">Templ</a>, and
-				<a href="https://htmx.org" class="text-indigo-600 hover:underline">HTMX</a>.
+				<a href="https://github.com/dayvsonlima/catuaba" class="text-primary-600 transition-colors duration-150 hover:text-primary-800 hover:underline">Catuaba</a>,
+				<a href="https://templ.guide" class="text-primary-600 transition-colors duration-150 hover:text-primary-800 hover:underline">Templ</a>, and
+				<a href="https://htmx.org" class="text-primary-600 transition-colors duration-150 hover:text-primary-800 hover:underline">HTMX</a>.
 			</p>
 			<div class="mt-10 flex items-center justify-center gap-x-6">
-				<a href="https://github.com/dayvsonlima/catuaba" class="rounded-md bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+				<a href="https://github.com/dayvsonlima/catuaba" class="rounded-md bg-primary-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-colors duration-150 hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
 					Documentation
 				</a>
-				<a href="https://github.com/dayvsonlima/catuaba" class="text-sm font-semibold text-gray-900 hover:text-indigo-600">
+				<a href="https://github.com/dayvsonlima/catuaba" class="text-sm font-semibold text-gray-900 transition-colors duration-150 hover:text-primary-600">
 					View on GitHub →
 				</a>
 			</div>
 			<div class="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-3">
-				<div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+				<div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-shadow duration-200 hover:shadow-md">
+					<div class="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-primary-50">
+						<svg class="h-6 w-6 text-primary-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 0 1-3-3m3 3a3 3 0 1 0 0 6h13.5a3 3 0 1 0 0-6m-16.5-3a3 3 0 0 1 3-3h13.5a3 3 0 0 1 3 3m-19.5 0a4.5 4.5 0 0 1 .9-2.7L5.737 5.1a3.375 3.375 0 0 1 2.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 0 1 .9 2.7m0 0a3 3 0 0 1-3 3m0 3h.008v.008h-.008v-.008Zm0-6h.008v.008h-.008v-.008ZM6.75 14.25h.008v.008H6.75v-.008Z"></path>
+						</svg>
+					</div>
 					<h3 class="text-lg font-semibold text-gray-900">Server-Side Rendered</h3>
 					<p class="mt-2 text-sm text-gray-600">Type-safe HTML with Templ. No JavaScript framework needed.</p>
 				</div>
-				<div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+				<div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-shadow duration-200 hover:shadow-md">
+					<div class="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-primary-50">
+						<svg class="h-6 w-6 text-primary-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"></path>
+						</svg>
+					</div>
 					<h3 class="text-lg font-semibold text-gray-900">Interactive with HTMX</h3>
 					<p class="mt-2 text-sm text-gray-600">Rich interactivity via HTML attributes. Zero custom JS required.</p>
 				</div>
-				<div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+				<div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-shadow duration-200 hover:shadow-md">
+					<div class="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-primary-50">
+						<svg class="h-6 w-6 text-primary-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42"></path>
+						</svg>
+					</div>
 					<h3 class="text-lg font-semibold text-gray-900">Styled with Tailwind</h3>
 					<p class="mt-2 text-sm text-gray-600">Utility-first CSS. Production-ready and responsive out of the box.</p>
 				</div>

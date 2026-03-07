@@ -16,6 +16,7 @@ import (
 )
 
 var DB *gorm.DB
+var dbDriver string
 
 type DBConfig struct {
 	Driver  string
@@ -29,13 +30,21 @@ type DBConfig struct {
 
 func Connect(cfg DBConfig) {
 	var err error
+	dbDriver = cfg.Driver
 
 	switch cfg.Driver {
 	case "postgres":
-		dsn := fmt.Sprintf(
-			"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
-			cfg.Host, cfg.Port, cfg.User, cfg.Pass, cfg.Name, cfg.SSLMode,
-		)
+		parts := []string{
+			"host=" + cfg.Host,
+			"port=" + cfg.Port,
+			"user=" + cfg.User,
+			"dbname=" + cfg.Name,
+			"sslmode=" + cfg.SSLMode,
+		}
+		if cfg.Pass != "" {
+			parts = append(parts, "password="+cfg.Pass)
+		}
+		dsn := strings.Join(parts, " ")
 		DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	case "mysql":
@@ -136,7 +145,11 @@ func getAppliedMigrations(db *sql.DB) (map[string]bool, error) {
 }
 
 func recordMigration(db *sql.DB, version string) {
-	db.Exec("INSERT INTO schema_migrations (version) VALUES (?)", version)
+	ph := "?"
+	if dbDriver == "postgres" {
+		ph = "$1"
+	}
+	db.Exec("INSERT INTO schema_migrations (version) VALUES ("+ph+")", version)
 }
 
 func extractVersion(filename string) string {

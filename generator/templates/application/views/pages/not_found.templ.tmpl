@@ -3,13 +3,16 @@ package pages
 import "{{.Name}}/app/views/layouts"
 
 templ NotFound() {
-	@layouts.Base("Page Not Found", "", "", "") {
+	@layouts.Base("Page Not Found", "", "") {
 		<div class="flex min-h-[60vh] items-center justify-center py-12">
 			<div class="text-center">
-				<p class="text-6xl font-bold text-indigo-600">404</p>
+				<svg class="mx-auto h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M15.182 16.318A4.486 4.486 0 0 0 12.016 15a4.486 4.486 0 0 0-3.198 1.318M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Z"></path>
+				</svg>
+				<p class="mt-4 text-7xl font-bold text-primary-600">404</p>
 				<h1 class="mt-4 text-3xl font-bold text-gray-900">Page not found</h1>
 				<p class="mt-2 text-gray-600">Sorry, we couldn't find the page you're looking for.</p>
-				<a href="/" class="mt-6 inline-block rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">
+				<a href="/" class="mt-6 inline-flex items-center justify-center rounded-md bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors duration-150 hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
 					Go home
 				</a>
 			</div>

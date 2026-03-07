@@ -1,12 +1,14 @@
 package {{.Name|toPlural|toSnake}}
 
 import (
+	"log"
 	"math"
 	"net/http"
 	"strconv"
 
 	"{{moduleName}}/app/models"
 	views "{{moduleName}}/app/views/{{.Name|toPlural|toSnake}}"
+	"{{moduleName}}/app/views/pages"
 	"{{moduleName}}/database"
 	"{{moduleName}}/middleware"
 
@@ -27,15 +29,21 @@ func Index(ctx *gin.Context) {
 
 	var total int64
 	if err := database.DB.Model(&models.{{.Name|toModelName}}{}).Count(&total).Error; err != nil {
-		ctx.String(http.StatusInternalServerError, err.Error())
+		log.Printf("Failed to count {{.Name|toLowerPlural}}: %v", err)
+		ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+		ctx.Writer.WriteHeader(http.StatusInternalServerError)
+		pages.Error("500", "Something went wrong", "An unexpected error occurred. Please try again later.").Render(ctx.Request.Context(), ctx.Writer)
 		return
 	}
 
 	var items []models.{{.Name|toModelName}}
 	offset := (page - 1) * limit
 
-	if err := database.DB.Offset(offset).Limit(limit).Find(&items).Error; err != nil {
-		ctx.String(http.StatusInternalServerError, err.Error())
+	if err := database.DB.Order("id DESC").Offset(offset).Limit(limit).Find(&items).Error; err != nil {
+		log.Printf("Failed to list {{.Name|toLowerPlural}}: %v", err)
+		ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+		ctx.Writer.WriteHeader(http.StatusInternalServerError)
+		pages.Error("500", "Something went wrong", "An unexpected error occurred. Please try again later.").Render(ctx.Request.Context(), ctx.Writer)
 		return
 	}
 

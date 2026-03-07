@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS {{.Name | toPlural | toSnake}} (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id {{.DBDriver | toSQLPrimaryKey}},
 {{- range .Params}}
-    {{. | toColumnName}} {{. | toSQLType}} NOT NULL DEFAULT {{. | toSQLDefault}},
+    {{. | toColumnName}} {{. | toSQLType}} NOT NULL DEFAULT {{toSQLDefaultFor $.DBDriver .}},
 {{- end}}
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

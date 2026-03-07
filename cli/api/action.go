@@ -35,8 +35,9 @@ func Action(c *cli.Context) error {
 	}
 
 	data := model.ModelBuilder{
-		Name:   generator.Camelize(name),
-		Params: attrs,
+		Name:     generator.Camelize(name),
+		Params:   attrs,
+		DBDriver: model.DBDriver(),
 	}
 
 	if err := model.BuildModel(data); err != nil {

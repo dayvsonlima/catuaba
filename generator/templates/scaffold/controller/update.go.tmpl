@@ -1,9 +1,12 @@
 package {{.Name|toPlural|toSnake}}
 
 import (
+	"log"
+	"net/http"
+	"strconv"
+
 	"{{moduleName}}/app/models"
 	"{{moduleName}}/database"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,9 +18,15 @@ type UpdateParams struct {
 
 // Update handles PUT/PATCH /{{.Name|toPlural|toSnake}}/:id
 func Update(ctx *gin.Context) {
+	if _, err := strconv.ParseUint(ctx.Param("id"), 10, 64); err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "Record not found"})
+		return
+	}
+
 	var {{.Name|toVarName}} models.{{.Name|toModelName}}
 
 	if err := database.DB.First(&{{.Name|toVarName}}, ctx.Param("id")).Error; err != nil {
+		log.Printf("error finding {{.Name|toSnake}} with id %s: %v", ctx.Param("id"), err)
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Record not found"})
 		return
 	}
@@ -31,7 +40,8 @@ func Update(ctx *gin.Context) {
 	{{ range .Params}}{{$.Name|toVarName}}.{{. | toAttrName}} = params.{{. | toAttrName}}
 	{{ end }}
 	if err := database.DB.Save(&{{.Name|toVarName}}).Error; err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		log.Printf("error updating {{.Name|toSnake}} with id %s: %v", ctx.Param("id"), err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "An unexpected error occurred"})
 		return
 	}
 

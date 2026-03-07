@@ -1,0 +1,12 @@
+package pages
+
+import (
+	"{{.Name}}/app/views/layouts"
+	"{{.Name}}/app/views/components"
+)
+
+templ Error(code string, title string, message string) {
+	@layouts.Base(title, "", "") {
+		@components.ErrorPage(code, title, message)
+	}
+}

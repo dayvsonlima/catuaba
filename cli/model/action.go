@@ -2,17 +2,29 @@ package model
 
 import (
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
 	"github.com/dayvsonlima/catuaba/cli/output"
 	"github.com/dayvsonlima/catuaba/generator"
+	"github.com/joho/godotenv"
 	"github.com/urfave/cli/v2"
 )
 
 type ModelBuilder struct {
-	Name   string
-	Params []string
+	Name     string
+	Params   []string
+	DBDriver string
+}
+
+// DBDriver reads the DB_DRIVER from .env, defaulting to "sqlite".
+func DBDriver() string {
+	godotenv.Load()
+	if d := os.Getenv("DB_DRIVER"); d != "" {
+		return d
+	}
+	return "sqlite"
 }
 
 func Action(c *cli.Context) error {
@@ -33,8 +45,9 @@ func Action(c *cli.Context) error {
 	}
 
 	data := ModelBuilder{
-		Name:   generator.Camelize(name),
-		Params: attrs,
+		Name:     generator.Camelize(name),
+		Params:   attrs,
+		DBDriver: DBDriver(),
 	}
 
 	return BuildModel(data)

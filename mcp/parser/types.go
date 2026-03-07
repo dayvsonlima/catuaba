@@ -50,6 +50,32 @@ type ProjectOverview struct {
 	Dirs    []string `json:"dirs,omitempty"`
 }
 
+// ComponentParam represents a parameter of a templ component.
+type ComponentParam struct {
+	Name string `json:"name"`
+	Type string `json:"type"`
+}
+
+// ComponentInfo represents a templ component with its signature.
+type ComponentInfo struct {
+	Name     string           `json:"name"`
+	File     string           `json:"file"`
+	Params   []ComponentParam `json:"params"`
+	Children bool             `json:"children"`
+}
+
+// ComponentType represents a Go type defined alongside components.
+type ComponentType struct {
+	Name   string      `json:"name"`
+	Fields []FieldInfo `json:"fields"`
+}
+
+// ComponentsResult holds all parsed components and their associated types.
+type ComponentsResult struct {
+	Components []ComponentInfo `json:"components"`
+	Types      []ComponentType `json:"types,omitempty"`
+}
+
 // LogEntry represents a compact log entry for the get_logs tool.
 type LogEntry struct {
 	Time    string `json:"t,omitempty"`

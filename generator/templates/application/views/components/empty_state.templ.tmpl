@@ -1,0 +1,14 @@
+package components
+
+templ EmptyState(message string, linkHref string, linkText string) {
+	<div class="text-center py-16">
+		<svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+			<path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m6 4.125 2.25 2.25m0 0 2.25 2.25M12 13.875l2.25-2.25M12 13.875l-2.25 2.25M3.75 7.5h16.5a.75.75 0 0 0 .75-.75v-1.5a.75.75 0 0 0-.75-.75H3.75a.75.75 0 0 0-.75.75v1.5c0 .414.336.75.75.75Z"></path>
+		</svg>
+		<h3 class="mt-4 text-sm font-semibold text-gray-900">No items yet</h3>
+		<p class="mt-1 text-sm text-gray-500">{ message }</p>
+		<div class="mt-6">
+			@PrimaryLinkButton(linkHref, linkText)
+		</div>
+	</div>
+}

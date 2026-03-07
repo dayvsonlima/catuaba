@@ -1,6 +1,11 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+{{- if hasType .Params "datetime"}}
+	"time"
+{{- end}}
+)
 
 // {{.Name | toModelName}} model
 type {{.Name | toModelName}} struct {

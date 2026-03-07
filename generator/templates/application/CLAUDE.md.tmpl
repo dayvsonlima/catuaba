@@ -142,7 +142,7 @@ ctx.JSON(http.StatusOK, gin.H{"data": items})
 ### Views (Templ)
 
 - `.templ` files compile to `_templ.go` (gitignored)
-- Every page wraps in `@layouts.Base(title, appName, flashMsg, flashType) { ... }`
+- Every page wraps in `@layouts.Base(title, flashMsg, flashType) { ... }`
 - Use `@components.Flash()`, `@components.Pagination()`, `@components.FormField()`
 - HTMX: `hx-get`, `hx-post`, `hx-target`, `hx-push-url` for SPA-like navigation
 - Alpine.js: `x-data`, `x-show`, `x-init` for client-side interactivity (flash dismiss, etc.)

@@ -1,9 +1,12 @@
 package {{.Name|toPlural|toSnake}}
 
 import (
+	"log"
 	"net/http"
+	"strconv"
 
 	"{{moduleName}}/app/models"
+	"{{moduleName}}/app/views/pages"
 	"{{moduleName}}/database"
 	"{{moduleName}}/middleware"
 
@@ -12,15 +15,24 @@ import (
 
 // Delete handles POST /{{.Name|toPlural|toSnake}}/:id/delete
 func Delete(ctx *gin.Context) {
+	if _, err := strconv.ParseUint(ctx.Param("id"), 10, 64); err != nil {
+		ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+		ctx.Writer.WriteHeader(http.StatusNotFound)
+		pages.Error("404", "Record not found", "The record you're looking for doesn't exist.").Render(ctx.Request.Context(), ctx.Writer)
+		return
+	}
+
 	var {{.Name|toVarName}} models.{{.Name|toModelName}}
 
 	if err := database.DB.First(&{{.Name|toVarName}}, ctx.Param("id")).Error; err != nil {
-		ctx.String(http.StatusNotFound, "Record not found")
+		middleware.SetFlash(ctx, "error", "Record not found.")
+		ctx.Redirect(http.StatusSeeOther, "/{{.Name|toPlural|toSnake}}")
 		return
 	}
 
 	if err := database.DB.Delete(&{{.Name|toVarName}}).Error; err != nil {
-		middleware.SetFlash(ctx, "error", "Failed to delete {{.Name}}: "+err.Error())
+		log.Printf("Failed to delete {{.Name|toSnake}}: %v", err)
+		middleware.SetFlash(ctx, "error", "Failed to delete {{.Name}}. Please try again.")
 		ctx.Redirect(http.StatusSeeOther, "/{{.Name|toPlural|toSnake}}")
 		return
 	}

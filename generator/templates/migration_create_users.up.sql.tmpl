@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id {{.DBDriver | toSQLPrimaryKey}},
     name VARCHAR(255) NOT NULL DEFAULT '',
     email VARCHAR(255) NOT NULL DEFAULT '',
     password_hash VARCHAR(255) NOT NULL DEFAULT '',

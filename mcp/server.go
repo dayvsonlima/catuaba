@@ -17,7 +17,7 @@ func NewServer(projectDir string) *server.MCPServer {
 		server.WithToolCapabilities(false),
 		server.WithLogging(),
 		server.WithRecovery(),
-		server.WithInstructions("Catuaba MCP server exposes project structure (models, routes, controllers, middleware, env) as compact JSON and provides code generation tools."),
+		server.WithInstructions("Catuaba MCP server exposes project structure (models, routes, controllers, middleware, env, UI components) as compact JSON and provides code generation tools. Use get_component to discover available templ components and their signatures before creating views."),
 	)
 
 	cache := NewCache()
@@ -59,6 +59,10 @@ func registerResources(s *server.MCPServer, projectDir string, cache *Cache) {
 	addResource(s, "catuaba://project/env", "Environment Variables",
 		"List of environment variable names from .env (no values)",
 		projectDir, cache, handleEnvResource)
+
+	addResource(s, "catuaba://project/components", "UI Components",
+		"All templ UI components with signatures, params, children support, and associated types",
+		projectDir, cache, handleComponentsResource)
 }
 
 func registerTools(s *server.MCPServer, projectDir string, cache *Cache) {
@@ -112,6 +116,14 @@ func registerTools(s *server.MCPServer, projectDir string, cache *Cache) {
 			mcplib.WithString("source", mcplib.Required(), mcplib.Description("Plugin name, git URL, or local path")),
 		),
 		makeInstallPluginHandler(cache),
+	)
+
+	s.AddTool(
+		mcplib.NewTool("get_component",
+			mcplib.WithDescription("Get UI component details. Returns all components if name is omitted, or the full source of a specific component."),
+			mcplib.WithString("name", mcplib.Description("Component name (optional, returns all if empty)")),
+		),
+		makeGetComponentHandler(projectDir, cache),
 	)
 
 	s.AddTool(

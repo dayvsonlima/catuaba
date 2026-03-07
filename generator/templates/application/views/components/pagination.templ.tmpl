@@ -4,32 +4,63 @@ import "fmt"
 
 templ Pagination(currentPage int, totalPages int, baseURL string) {
 	if totalPages > 1 {
-		<nav class="mt-6 flex items-center justify-center gap-2" aria-label="Pagination">
-			if currentPage > 1 {
-				<a
-					href={ templ.SafeURL(fmt.Sprintf("%s?page=%d", baseURL, currentPage-1)) }
-					hx-get={ fmt.Sprintf("%s?page=%d", baseURL, currentPage-1) }
-					hx-target="#content"
-					hx-push-url="true"
-					class="rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
-				>
-					Previous
-				</a>
-			}
-			<span class="text-sm text-gray-600">
-				Page { fmt.Sprintf("%d", currentPage) } of { fmt.Sprintf("%d", totalPages) }
-			</span>
-			if currentPage < totalPages {
-				<a
-					href={ templ.SafeURL(fmt.Sprintf("%s?page=%d", baseURL, currentPage+1)) }
-					hx-get={ fmt.Sprintf("%s?page=%d", baseURL, currentPage+1) }
-					hx-target="#content"
-					hx-push-url="true"
-					class="rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
-				>
-					Next
-				</a>
-			}
+		<nav class="mt-6 flex items-center justify-center" aria-label="Pagination">
+			<!-- Mobile: prev/next only -->
+			<div class="flex gap-2 sm:hidden">
+				if currentPage > 1 {
+					<a
+						href={ templ.SafeURL(fmt.Sprintf("%s?page=%d", baseURL, currentPage-1)) }
+						class="inline-flex items-center gap-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-colors duration-150 hover:bg-gray-50"
+					>
+						<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path>
+						</svg>
+						Previous
+					</a>
+				}
+				<span class="inline-flex items-center px-3 py-2 text-sm text-gray-600">
+					{ fmt.Sprintf("%d / %d", currentPage, totalPages) }
+				</span>
+				if currentPage < totalPages {
+					<a
+						href={ templ.SafeURL(fmt.Sprintf("%s?page=%d", baseURL, currentPage+1)) }
+						class="inline-flex items-center gap-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-colors duration-150 hover:bg-gray-50"
+					>
+						Next
+						<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path>
+						</svg>
+					</a>
+				}
+			</div>
+			<!-- Desktop: grouped buttons -->
+			<div class="hidden sm:flex sm:items-center sm:gap-1">
+				if currentPage > 1 {
+					<a
+						href={ templ.SafeURL(fmt.Sprintf("%s?page=%d", baseURL, currentPage-1)) }
+						class="inline-flex items-center rounded-md border border-gray-300 bg-white p-2 text-sm text-gray-500 transition-colors duration-150 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+						aria-label="Previous page"
+					>
+						<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path>
+						</svg>
+					</a>
+				}
+				<span class="px-3 py-2 text-sm text-gray-600">
+					Page { fmt.Sprintf("%d", currentPage) } of { fmt.Sprintf("%d", totalPages) }
+				</span>
+				if currentPage < totalPages {
+					<a
+						href={ templ.SafeURL(fmt.Sprintf("%s?page=%d", baseURL, currentPage+1)) }
+						class="inline-flex items-center rounded-md border border-gray-300 bg-white p-2 text-sm text-gray-500 transition-colors duration-150 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+						aria-label="Next page"
+					>
+						<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path>
+						</svg>
+					</a>
+				}
+			</div>
 		</nav>
 	}
 }

@@ -1,0 +1,14 @@
+package components
+
+templ ErrorPage(code string, title string, message string) {
+	<div class="flex min-h-[60vh] items-center justify-center py-12">
+		<div class="text-center">
+			<p class="text-7xl font-bold text-primary-600">{ code }</p>
+			<h1 class="mt-4 text-2xl font-bold text-gray-900">{ title }</h1>
+			<p class="mt-2 text-gray-600">{ message }</p>
+			<a href="/" class="mt-6 inline-flex items-center justify-center rounded-md bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors duration-150 hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
+				Go home
+			</a>
+		</div>
+	</div>
+}

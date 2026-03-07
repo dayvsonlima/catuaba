@@ -2,9 +2,11 @@ package {{.Name|toPlural|toSnake}}
 
 import (
 	"net/http"
+	"strconv"
 
 	"{{moduleName}}/app/models"
 	views "{{moduleName}}/app/views/{{.Name|toPlural|toSnake}}"
+	"{{moduleName}}/app/views/pages"
 	"{{moduleName}}/database"
 	"{{moduleName}}/middleware"
 
@@ -13,10 +15,19 @@ import (
 
 // Edit handles GET /{{.Name|toPlural|toSnake}}/:id/edit
 func Edit(ctx *gin.Context) {
+	if _, err := strconv.ParseUint(ctx.Param("id"), 10, 64); err != nil {
+		ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+		ctx.Writer.WriteHeader(http.StatusNotFound)
+		pages.Error("404", "Record not found", "The record you're looking for doesn't exist.").Render(ctx.Request.Context(), ctx.Writer)
+		return
+	}
+
 	var {{.Name|toVarName}} models.{{.Name|toModelName}}
 
 	if err := database.DB.First(&{{.Name|toVarName}}, ctx.Param("id")).Error; err != nil {
-		ctx.String(http.StatusNotFound, "Record not found")
+		ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+		ctx.Writer.WriteHeader(http.StatusNotFound)
+		pages.Error("404", "Record not found", "The record you're looking for doesn't exist.").Render(ctx.Request.Context(), ctx.Writer)
 		return
 	}
 

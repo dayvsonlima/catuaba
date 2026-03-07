@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"net/url"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -11,18 +13,24 @@ const (
 
 // SetFlash stores a flash message in the cookie for the next request.
 func SetFlash(ctx *gin.Context, flashType string, message string) {
-	ctx.SetCookie(flashMsgKey, message, 5, "/", "", false, true)
-	ctx.SetCookie(flashTypeKey, flashType, 5, "/", "", false, true)
+	ctx.SetCookie(flashMsgKey, url.QueryEscape(message), 5, "/", "", false, true)
+	ctx.SetCookie(flashTypeKey, url.QueryEscape(flashType), 5, "/", "", false, true)
 }
 
 // GetFlash reads and clears the flash message from cookies.
 func GetFlash(ctx *gin.Context) (string, string) {
-	msg, err := ctx.Cookie(flashMsgKey)
-	if err != nil || msg == "" {
+	rawMsg, err := ctx.Cookie(flashMsgKey)
+	if err != nil || rawMsg == "" {
 		return "", ""
 	}
 
-	flashType, _ := ctx.Cookie(flashTypeKey)
+	msg, _ := url.QueryUnescape(rawMsg)
+	if msg == "" {
+		return "", ""
+	}
+
+	rawType, _ := ctx.Cookie(flashTypeKey)
+	flashType, _ := url.QueryUnescape(rawType)
 	if flashType == "" {
 		flashType = "success"
 	}

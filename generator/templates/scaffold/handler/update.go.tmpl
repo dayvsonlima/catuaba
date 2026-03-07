@@ -2,10 +2,13 @@ package {{.Name|toPlural|toSnake}}
 
 import (
 	"fmt"
+	"log"
 	"net/http"
+	"strconv"
 
 	"{{moduleName}}/app/models"
 	views "{{moduleName}}/app/views/{{.Name|toPlural|toSnake}}"
+	"{{moduleName}}/app/views/pages"
 	"{{moduleName}}/database"
 	"{{moduleName}}/middleware"
 
@@ -19,25 +22,35 @@ type UpdateParams struct {
 
 // Update handles POST /{{.Name|toPlural|toSnake}}/:id
 func Update(ctx *gin.Context) {
+	if _, err := strconv.ParseUint(ctx.Param("id"), 10, 64); err != nil {
+		ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+		ctx.Writer.WriteHeader(http.StatusNotFound)
+		pages.Error("404", "Record not found", "The record you're looking for doesn't exist.").Render(ctx.Request.Context(), ctx.Writer)
+		return
+	}
+
 	var {{.Name|toVarName}} models.{{.Name|toModelName}}
 
 	if err := database.DB.First(&{{.Name|toVarName}}, ctx.Param("id")).Error; err != nil {
-		ctx.String(http.StatusNotFound, "Record not found")
+		ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+		ctx.Writer.WriteHeader(http.StatusNotFound)
+		pages.Error("404", "Record not found", "The record you're looking for doesn't exist.").Render(ctx.Request.Context(), ctx.Writer)
 		return
 	}
 
 	var params UpdateParams
 	if err := ctx.ShouldBind(&params); err != nil {
 		ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
-		views.Form({{.Name|toVarName}}, true, map[string]string{"base": err.Error()}, "", "").Render(ctx.Request.Context(), ctx.Writer)
+		views.Form({{.Name|toVarName}}, true, map[string]string{"base": "Please check the form fields and try again."}, "", "").Render(ctx.Request.Context(), ctx.Writer)
 		return
 	}
 
 	{{ range .Params}}{{$.Name|toVarName}}.{{. | toAttrName}} = params.{{. | toAttrName}}
 	{{ end }}
 	if err := database.DB.Save(&{{.Name|toVarName}}).Error; err != nil {
+		log.Printf("Failed to update {{.Name|toSnake}}: %v", err)
 		ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
-		views.Form({{.Name|toVarName}}, true, map[string]string{"base": err.Error()}, "", "").Render(ctx.Request.Context(), ctx.Writer)
+		views.Form({{.Name|toVarName}}, true, map[string]string{"base": "An unexpected error occurred. Please try again."}, "", "").Render(ctx.Request.Context(), ctx.Writer)
 		return
 	}
 

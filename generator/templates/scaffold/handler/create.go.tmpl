@@ -1,6 +1,7 @@
 package {{.Name|toPlural|toSnake}}
 
 import (
+	"log"
 	"net/http"
 
 	"{{moduleName}}/app/models"
@@ -21,7 +22,7 @@ func Create(ctx *gin.Context) {
 	var params CreateParams
 	if err := ctx.ShouldBind(&params); err != nil {
 		ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
-		views.Form(models.{{.Name|toModelName}}{}, false, map[string]string{"base": err.Error()}, "", "").Render(ctx.Request.Context(), ctx.Writer)
+		views.Form(models.{{.Name|toModelName}}{}, false, map[string]string{"base": "Please check the form fields and try again."}, "", "").Render(ctx.Request.Context(), ctx.Writer)
 		return
 	}
 
@@ -31,8 +32,9 @@ func Create(ctx *gin.Context) {
 	}
 
 	if err := database.DB.Create(&{{.Name|toVarName}}).Error; err != nil {
+		log.Printf("Failed to create {{.Name|toSnake}}: %v", err)
 		ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
-		views.Form({{.Name|toVarName}}, false, map[string]string{"base": err.Error()}, "", "").Render(ctx.Request.Context(), ctx.Writer)
+		views.Form({{.Name|toVarName}}, false, map[string]string{"base": "An unexpected error occurred. Please try again."}, "", "").Render(ctx.Request.Context(), ctx.Writer)
 		return
 	}
 

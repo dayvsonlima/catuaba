@@ -139,8 +139,21 @@ func Action(c *cli.Context) error {
 		{"application/views/components/flash.templ.tmpl", data.Name + "/app/views/components/flash.templ"},
 		{"application/views/components/pagination.templ.tmpl", data.Name + "/app/views/components/pagination.templ"},
 		{"application/views/components/form_field.templ.tmpl", data.Name + "/app/views/components/form_field.templ"},
+		{"application/views/components/badge.templ.tmpl", data.Name + "/app/views/components/badge.templ"},
+		{"application/views/components/button.templ.tmpl", data.Name + "/app/views/components/button.templ"},
+		{"application/views/components/card.templ.tmpl", data.Name + "/app/views/components/card.templ"},
+		{"application/views/components/page_header.templ.tmpl", data.Name + "/app/views/components/page_header.templ"},
+		{"application/views/components/empty_state.templ.tmpl", data.Name + "/app/views/components/empty_state.templ"},
+		{"application/views/components/back_link.templ.tmpl", data.Name + "/app/views/components/back_link.templ"},
+		{"application/views/components/detail_row.templ.tmpl", data.Name + "/app/views/components/detail_row.templ"},
+		{"application/views/components/delete_form.templ.tmpl", data.Name + "/app/views/components/delete_form.templ"},
+		{"application/views/components/table.templ.tmpl", data.Name + "/app/views/components/table.templ"},
+		{"application/views/components/spinner.templ.tmpl", data.Name + "/app/views/components/spinner.templ"},
+		{"application/views/components/form_actions.templ.tmpl", data.Name + "/app/views/components/form_actions.templ"},
+		{"application/views/components/error_page.templ.tmpl", data.Name + "/app/views/components/error_page.templ"},
 		{"application/views/pages/home.templ.tmpl", data.Name + "/app/views/pages/home.templ"},
 		{"application/views/pages/not_found.templ.tmpl", data.Name + "/app/views/pages/not_found.templ"},
+		{"application/views/pages/error.templ.tmpl", data.Name + "/app/views/pages/error.templ"},
 	}
 
 	if data.Auth {

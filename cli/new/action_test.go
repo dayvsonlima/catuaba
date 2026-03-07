@@ -104,6 +104,25 @@ func TestAction(t *testing.T) {
 		assert.DirExists(t, filepath.Join(tmpDir, "testapp", ".github", "workflows"))
 		assert.FileExists(t, filepath.Join(tmpDir, "testapp", ".github", "workflows", "ci.yml"))
 
+		// Check component files
+		assert.FileExists(t, filepath.Join(tmpDir, "testapp", "app", "views", "components", "nav.templ"))
+		assert.FileExists(t, filepath.Join(tmpDir, "testapp", "app", "views", "components", "flash.templ"))
+		assert.FileExists(t, filepath.Join(tmpDir, "testapp", "app", "views", "components", "pagination.templ"))
+		assert.FileExists(t, filepath.Join(tmpDir, "testapp", "app", "views", "components", "form_field.templ"))
+		assert.FileExists(t, filepath.Join(tmpDir, "testapp", "app", "views", "components", "badge.templ"))
+		assert.FileExists(t, filepath.Join(tmpDir, "testapp", "app", "views", "components", "button.templ"))
+		assert.FileExists(t, filepath.Join(tmpDir, "testapp", "app", "views", "components", "card.templ"))
+		assert.FileExists(t, filepath.Join(tmpDir, "testapp", "app", "views", "components", "page_header.templ"))
+		assert.FileExists(t, filepath.Join(tmpDir, "testapp", "app", "views", "components", "empty_state.templ"))
+		assert.FileExists(t, filepath.Join(tmpDir, "testapp", "app", "views", "components", "back_link.templ"))
+		assert.FileExists(t, filepath.Join(tmpDir, "testapp", "app", "views", "components", "detail_row.templ"))
+		assert.FileExists(t, filepath.Join(tmpDir, "testapp", "app", "views", "components", "delete_form.templ"))
+		assert.FileExists(t, filepath.Join(tmpDir, "testapp", "app", "views", "components", "table.templ"))
+		assert.FileExists(t, filepath.Join(tmpDir, "testapp", "app", "views", "components", "spinner.templ"))
+		assert.FileExists(t, filepath.Join(tmpDir, "testapp", "app", "views", "components", "form_actions.templ"))
+		assert.FileExists(t, filepath.Join(tmpDir, "testapp", "app", "views", "components", "error_page.templ"))
+		assert.FileExists(t, filepath.Join(tmpDir, "testapp", "app", "views", "pages", "error.templ"))
+
 		// Verify .env contains postgres config
 		envContent, _ := os.ReadFile(filepath.Join(tmpDir, "testapp", ".env"))
 		assert.Contains(t, string(envContent), "DB_DRIVER=postgres")
